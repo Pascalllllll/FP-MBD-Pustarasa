@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar.jsx';
 import Topbar from './Topbar.jsx';
+import AmbientBlobs from './AmbientBlobs.jsx';
 import { NAV_GROUPS } from './nav.js';
 
 function titleForPath(pathname) {
@@ -17,6 +18,8 @@ export default function Layout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const title = titleForPath(location.pathname);
+
+  const isDashboard = location.pathname === '/';
 
   return (
     <div className="flex min-h-screen bg-paper">
@@ -37,8 +40,9 @@ export default function Layout() {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar title={title} onMenu={() => setMobileOpen(true)} />
-        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-6xl">
+        <main className="relative flex-1 overflow-hidden px-4 py-6 sm:px-6 lg:px-8">
+          {isDashboard && <AmbientBlobs />}
+          <div className="relative z-10 mx-auto max-w-6xl">
             <Outlet />
           </div>
         </main>

@@ -74,7 +74,7 @@ export default function Dashboard() {
           {/* DUAL-WORLD SPLIT — the signature layout */}
           <div className="grid gap-6 lg:grid-cols-2">
             {/* Perpustakaan world */}
-            <section className="rounded-xl2 border border-library/15 bg-library-soft/40 p-5">
+            <section className="animate-fade-in-up rounded-xl2 border border-library/15 bg-library-soft/40 p-5">
               <WorldHeader tone="library" kicker="Dunia Buku" title="Perpustakaan" />
               <div className="grid grid-cols-2 gap-3">
                 <StatCard label="Total Buku" value={kpi.total_buku} icon={IconBook} accent="library" />
@@ -85,7 +85,10 @@ export default function Dashboard() {
             </section>
 
             {/* Kantin world */}
-            <section className="rounded-xl2 border border-canteen/20 bg-canteen-soft/40 p-5">
+            <section
+              className="animate-fade-in-up rounded-xl2 border border-canteen/20 bg-canteen-soft/40 p-5"
+              style={{ animationDelay: '0.08s' }}
+            >
               <WorldHeader tone="canteen" kicker="Dunia Rasa" title="Kantin" />
               <div className="grid grid-cols-2 gap-3">
                 <StatCard label="Menu Tersedia" value={kpi.makanan_tersedia} sub={`${kpi.makanan_habis} habis`} icon={IconFood} accent="canteen" />
@@ -97,7 +100,7 @@ export default function Dashboard() {
           </div>
 
           {/* Kunjungan strip */}
-          <section>
+          <section className="animate-fade-in-up" style={{ animationDelay: '0.16s' }}>
             <WorldHeader tone="library" kicker="Aktivitas" title="Kunjungan Ruang Baca" />
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               <StatCard label="Sedang di Dalam" value={kpi.kunjungan_aktif} sub="belum check-out" icon={IconClock} accent="ink" />
@@ -109,7 +112,7 @@ export default function Dashboard() {
 
           {/* Daily recap — sourced from stored procedure sp_rekap_harian */}
           {recap && (
-            <section className="card p-5">
+            <section className="card animate-fade-in-up p-5" style={{ animationDelay: '0.24s' }}>
               <div className="mb-4 flex items-center justify-between">
                 <div>
                   <h3 className="font-display text-lg font-bold">Rekap Harian</h3>

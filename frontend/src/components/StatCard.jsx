@@ -7,7 +7,7 @@ const ACCENT = {
 
 export default function StatCard({ label, value, sub, icon: Icon, accent = 'ink' }) {
   return (
-    <div className="card p-4">
+    <div className="card p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-pop">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-muted">{label}</p>

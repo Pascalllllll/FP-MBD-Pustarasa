@@ -53,8 +53,12 @@ export default function Login() {
         />
         {/* warm canteen glow bleeding in from the bottom-right */}
         <div
-          className="absolute -bottom-32 -right-24 h-96 w-96 rounded-full opacity-40 blur-3xl"
+          className="animate-blob absolute -bottom-32 -right-24 h-96 w-96 rounded-full opacity-40 blur-3xl"
           style={{ background: 'radial-gradient(circle, #F59E0B 0%, transparent 70%)' }}
+        />
+        <div
+          className="animate-blob absolute -left-20 top-1/3 h-80 w-80 rounded-full opacity-25 blur-3xl"
+          style={{ background: 'radial-gradient(circle, #A78BFA 0%, transparent 70%)', animationDelay: '-11s' }}
         />
         <div className="relative flex h-full flex-col justify-between p-12 text-white">
           <span className="font-display text-3xl font-extrabold tracking-tight">
