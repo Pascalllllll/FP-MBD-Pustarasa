@@ -1,0 +1,1 @@
+Taruh foto kreator di sini: `1.jpg`, `2.jpg`, `3.jpg`, `4.jpg` (cocokkan nama file dengan `photo` di `frontend/src/pages/Creators.jsx`). Sebelum file ada, halaman menampilkan inisial nama sebagai pengganti.

@@ -2,8 +2,10 @@ import { Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import Layout from './components/Layout.jsx';
 import ToastContainer from './components/ToastContainer.jsx';
+import GithubFab from './components/GithubFab.jsx';
 
 import Login from './pages/Login.jsx';
+import Creators from './pages/Creators.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Books from './pages/Books.jsx';
 import Borrowings from './pages/Borrowings.jsx';
@@ -21,8 +23,10 @@ export default function App() {
   return (
     <>
       <ToastContainer />
+      <GithubFab />
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/kreator" element={<Creators />} />
 
         <Route
           element={
