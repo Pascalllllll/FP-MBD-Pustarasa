@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-paper: 251 247 240;
+    --color-surface: 255 255 255;
+    --color-ink: 30 27 46;
+    --color-muted: 122 116 102;
+    --color-line: 236 230 220;
+    --color-library: 109 40 217;
+    --color-library-soft: 237 231 251;
+    --color-library-ink: 76 29 149;
+    --color-canteen: 245 158 11;
+    --color-canteen-soft: 254 241 218;
+    --color-canteen-ink: 180 83 9;
+    --color-danger: 220 38 38;
+    --color-success: 21 128 61;
+  }
+  .dark {
+    --color-paper: 19 18 28;
+    --color-surface: 27 25 38;
+    --color-ink: 237 235 245;
+    --color-muted: 156 150 175;
+    --color-line: 51 47 68;
+    --color-library: 167 139 250;
+    --color-library-soft: 45 35 77;
+    --color-library-ink: 221 209 251;
+    --color-canteen: 251 191 36;
+    --color-canteen-soft: 58 44 17;
+    --color-canteen-ink: 252 211 134;
+    --color-danger: 248 113 113;
+    --color-success: 74 222 128;
+  }
+  html {
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    @apply bg-paper text-ink font-sans;
+  }
+  /* Visible keyboard focus everywhere (quality floor) */
+  :focus-visible {
+    outline: 2px solid #6d28d9;
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-surface border border-line rounded-xl2 shadow-card;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2
+           text-sm font-semibold transition-colors disabled:opacity-50
+           disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-ink text-paper hover:bg-ink/90;
+  }
+  .btn-library {
+    @apply btn bg-library text-white hover:bg-library-ink;
+  }
+  .btn-canteen {
+    @apply btn bg-canteen text-canteen-ink hover:bg-canteen/80;
+  }
+  .btn-ghost {
+    @apply btn border border-line bg-surface text-ink hover:bg-paper;
+  }
+  .btn-danger {
+    @apply btn bg-danger/10 text-danger hover:bg-danger/20;
+  }
+  .input {
+    @apply w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm
+           text-ink placeholder:text-muted/60 focus:border-library
+           focus:outline-none;
+  }
+  .label {
+    @apply mb-1 block text-xs font-semibold uppercase tracking-wide text-muted;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold;
+  }
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-0.5rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-toast-in {
+  animation: toast-in 0.18s ease-out;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
