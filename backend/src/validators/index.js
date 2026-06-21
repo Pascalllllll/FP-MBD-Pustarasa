@@ -51,6 +51,7 @@ const foodCreate = [
   body('Harga_mk').isFloat({ min: 0 }).withMessage('Harga harus angka >= 0'),
   body('Status_Ketersediaan_mk').optional()
     .isIn(['Ada', 'Habis']).withMessage("Status harus 'Ada' atau 'Habis'"),
+  nik('Penjual_NIK_pj', 'NIK penjual'),
 ];
 
 const librarianCreate = [

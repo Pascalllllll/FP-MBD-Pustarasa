@@ -22,6 +22,7 @@ import { IconPlus, IconEdit, IconTrash } from './icons.jsx';
  *  - deleteRoles        roles allowed to delete
  *  - defaults           initial values for the create form
  *  - beforeSubmit(form) optional transform -> payload
+ *  - canEditRow(row)    optional, gates the edit button per row (default: all rows)
  */
 export default function ResourcePage(cfg) {
   const { hasRole } = useAuth();
@@ -154,7 +155,7 @@ export default function ResourcePage(cfg) {
           canWrite || canDelete
             ? (row) => (
                 <>
-                  {canWrite && (
+                  {canWrite && (!cfg.canEditRow || cfg.canEditRow(row)) && (
                     <button className="btn-ghost h-8 w-8 !px-0" onClick={() => openEdit(row)} aria-label="Ubah">
                       <IconEdit className="h-4 w-4" />
                     </button>

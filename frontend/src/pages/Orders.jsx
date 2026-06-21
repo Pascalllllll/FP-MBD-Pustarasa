@@ -19,7 +19,7 @@ export default function Orders() {
       <PageHeader
         title="Kasir & Pesanan"
         service="kantin"
-        description="Buat pesanan makanan melalui kasir. Checkout dijalankan oleh prosedur sp_checkout_pesanan dalam satu transaksi; menu habis otomatis ditolak oleh trigger."
+        description="Setiap penjual punya menunya sendiri — pilih penjual untuk membuka kasirnya, lalu buat pesanan. Checkout dijalankan oleh prosedur sp_checkout_pesanan dalam satu transaksi; menu habis otomatis ditolak oleh trigger."
         actions={
           <div className="flex rounded-lg border border-line bg-surface p-0.5">
             {['kasir', 'riwayat'].map((t) => (
@@ -88,6 +88,12 @@ function PosScreen({ user }) {
     })();
   }, [user]);
 
+  // Switching stalls resets the cart — items belong to the previous seller's menu.
+  const selectSeller = (nextNik) => {
+    setNikPj(nextNik);
+    setCart({});
+  };
+
   const add = (food) =>
     setCart((c) => ({ ...c, [food.ID_mk]: { food, qty: (c[food.ID_mk]?.qty || 0) + 1 } }));
   // Quantity is left exactly as typed/clicked, including 0 or negative — checkout
@@ -108,7 +114,8 @@ function PosScreen({ user }) {
     [lines]
   );
 
-  const filteredFoods = foods.filter((f) =>
+  const menu = useMemo(() => foods.filter((f) => f.Penjual_NIK_pj === nikPj), [foods, nikPj]);
+  const filteredFoods = menu.filter((f) =>
     f.Nama_mk.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -134,8 +141,43 @@ function PosScreen({ user }) {
   if (loading) return <div className="card p-10 text-center text-muted">Memuat menu…</div>;
   if (loadError) return <Alert type="error">{loadError}</Alert>;
 
+  if (!nikPj) {
+    return (
+      <div>
+        <p className="mb-3 text-sm text-muted">Setiap penjual punya menunya sendiri — pilih penjual untuk membuka kasirnya.</p>
+        {sellers.length === 0 ? (
+          <Alert type="info">Belum ada data penjual.</Alert>
+        ) : (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {sellers.map((s) => (
+              <button
+                key={s.NIK_pj}
+                onClick={() => selectSeller(s.NIK_pj)}
+                className="card p-4 text-left transition-shadow hover:shadow-pop"
+              >
+                <span className="font-medium">{s.Nama_pj}</span>
+                <span className="block font-mono text-xs text-muted">{s.NIK_pj}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  const seller = sellers.find((s) => s.NIK_pj === nikPj);
+
   return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_360px]">
+    <div>
+      <div className="mb-4 flex items-center justify-between rounded-xl border border-line bg-surface px-4 py-3">
+        <div>
+          <p className="text-xs text-muted">Menu milik</p>
+          <p className="font-display text-lg font-bold">{seller?.Nama_pj || nikPj}</p>
+        </div>
+        <button className="btn-ghost" onClick={() => selectSeller('')}>Ganti Penjual</button>
+      </div>
+
+      <div className="grid gap-5 lg:grid-cols-[1fr_360px]">
       <div>
         <input
           className="input mb-3"
@@ -144,7 +186,7 @@ function PosScreen({ user }) {
           onChange={(e) => setSearch(e.target.value)}
         />
         {filteredFoods.length === 0 ? (
-          <div className="card p-8 text-center text-muted">Tidak ada menu tersedia.</div>
+          <div className="card p-8 text-center text-muted">Belum ada menu untuk penjual ini.</div>
         ) : (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             {filteredFoods.map((f) => {
@@ -195,25 +237,14 @@ function PosScreen({ user }) {
               ))}
             </select>
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className="label">Penjual</label>
-              <select className="input" value={nikPj} onChange={(e) => setNikPj(e.target.value)}>
-                <option value="">— Pilih —</option>
-                {sellers.map((s) => (
-                  <option key={s.NIK_pj} value={s.NIK_pj}>{s.Nama_pj}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="label">Pembayaran</label>
-              <select className="input" value={idMp} onChange={(e) => setIdMp(e.target.value)}>
-                <option value="">— Pilih —</option>
-                {methods.map((m) => (
-                  <option key={m.ID_mp} value={m.ID_mp}>{m.Instansi_mp} · {m.Jenis_mp}</option>
-                ))}
-              </select>
-            </div>
+          <div>
+            <label className="label">Pembayaran</label>
+            <select className="input" value={idMp} onChange={(e) => setIdMp(e.target.value)}>
+              <option value="">— Pilih —</option>
+              {methods.map((m) => (
+                <option key={m.ID_mp} value={m.ID_mp}>{m.Instansi_mp} · {m.Jenis_mp}</option>
+              ))}
+            </select>
           </div>
         </div>
 
@@ -262,10 +293,11 @@ function PosScreen({ user }) {
         <button
           className="btn-canteen mt-4 w-full"
           onClick={checkout}
-          disabled={busy || lines.length === 0 || !nik || !nikPj || !idMp}
+          disabled={busy || lines.length === 0 || !nik || !idMp}
         >
           {busy ? 'Memproses…' : 'Proses Pesanan'}
         </button>
+      </div>
       </div>
 
       <Modal

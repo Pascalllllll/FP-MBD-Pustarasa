@@ -14,7 +14,7 @@ Basis data `pustarasa` memodelkan sebuah ruang baca yang menggabungkan **perpust
 | `Pustakawan` | `NIK_pt` CHAR(16) | Petugas perpustakaan (punya shift) |
 | `Penjual` | `NIK_pj` CHAR(16) | Petugas kantin |
 | `Buku` | `ID_b` CHAR(6) | Koleksi; `Keterangan_b` = flag sirkulasi (Dipinjam / Tidak Dipinjam) |
-| `Makanan` | `ID_mk` CHAR(6) | Menu; `Status_Ketersediaan_mk` = Ada / Habis |
+| `Makanan` | `ID_mk` CHAR(6) | Menu; `Status_Ketersediaan_mk` = Ada / Habis; `Penjual_NIK_pj` = pemilik menu (FK → `Penjual`) |
 | `Metode_pembayaran` | `ID_mp` CHAR(6) | Cara bayar kantin |
 | `Waktu_kunjung` | `ID_wk` CHAR(6) | Sesi kunjungan (masuk/keluar) |
 | `Peminjaman` | `ID_pm` CHAR(6) | Header transaksi pinjam |
@@ -35,6 +35,7 @@ Basis data `pustarasa` memodelkan sebuah ruang baca yang menggabungkan **perpust
 Pengunjung 1───∞ Waktu_kunjung
 Pengunjung 1───∞ Peminjaman ∞───1 Pustakawan
 Peminjaman 1───∞ Detail_Peminjaman ∞───1 Buku
+Penjual    1───∞ Makanan
 Pengunjung 1───∞ Pemesanan ∞───1 Penjual
 Pemesanan  ∞───1 Metode_pembayaran
 Pemesanan  1───∞ Detail_Pemesanan ∞───1 Makanan
@@ -175,3 +176,4 @@ Demi sistem yang dapat dijalankan, beberapa keputusan diambil dan dinyatakan ter
 4. **Resolusi ganda untuk trigger ke-10.** Pada sumber, trigger ke-10 berjudul "Log Perubahan Alamat" namun berisi kode validasi NIK. Keduanya dipertahankan: `trg_validasi_update_nik` (mengunci NIK) **dan** `trg_log_perubahan_alamat` (mengisi `Log_Perubahan_Alamat`). Aplikasi memakai keduanya.
 5. **Isi prosedur ditulis lengkap.** Sumber hanya mendeskripsikan perilaku prosedur; implementasinya (termasuk penanganan JSON, snapshot harga, dan `ROLLBACK`) ditulis sesuai deskripsi tersebut.
 6. **Backend tidak pernah melewati logika DB.** Pemesanan, pengembalian, denda, rekomendasi, total, dan rekap semuanya memanggil function/procedure/view — bukan menghitung ulang di lapisan aplikasi. Trigger menangani pembaruan status otomatis.
+7. **Relasi `Penjual`–`Makanan` (1‑ke‑banyak).** `Makanan.Penjual_NIK_pj` (FK → `Penjual.NIK_pj`, `ON UPDATE CASCADE ON DELETE RESTRICT`) menandai menu tersebut **dimiliki** oleh satu penjual; satu penjual bisa punya banyak menu. Ini terpisah dari `Pemesanan.Penjual_NIK_pj`, yang menandai penjual mana yang **memproses** transaksi kasir — seorang kasir boleh menjual menu milik penjual lain. Karena `Nama_mk` tidak diberi constraint UNIQUE, dua penjual berbeda boleh punya menu dengan nama yang sama; masing-masing tetap baris (`ID_mk`) tersendiri di tabel `Makanan`.

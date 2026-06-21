@@ -77,7 +77,13 @@ CREATE TABLE Makanan (
     Jenis_mk VARCHAR(50) NOT NULL,
     Harga_mk DECIMAL(12,2) NOT NULL,
     Status_Ketersediaan_mk VARCHAR(20) NOT NULL,
-    PRIMARY KEY (ID_mk)
+    Penjual_NIK_pj CHAR(16) NOT NULL,
+    PRIMARY KEY (ID_mk),
+    CONSTRAINT fk_makanan_penjual
+        FOREIGN KEY (Penjual_NIK_pj)
+        REFERENCES Penjual (NIK_pj)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE Metode_pembayaran (

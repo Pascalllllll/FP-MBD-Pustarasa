@@ -270,6 +270,23 @@ SHOW PROCEDURE STATUS WHERE Db = 'pustarasa';   -- 3 procedure
 SHOW FULL TABLES IN pustarasa WHERE Table_type = 'VIEW';  -- 20 view
 ```
 
+### Melihat & Menguji Function
+
+```sql
+-- Daftar singkat kedelapan function (nama, tipe, dll.)
+SHOW FUNCTION STATUS WHERE Db = 'pustarasa';
+
+-- Lihat definisi/isi lengkap (body) satu function
+SHOW CREATE FUNCTION sf_hitung_denda_peminjaman\G
+
+-- Panggil langsung lewat SELECT untuk melihat hasilnya (ganti ID sesuai data Anda)
+SELECT sf_cek_ketersediaan_buku('B00001')            AS status_buku;
+SELECT sf_hitung_total_pemesanan('PS0001')           AS total_pesanan;
+SELECT sf_cek_status_keanggotaan('1234567890123456') AS status_keanggotaan;
+```
+
+Daftar lengkap kedelapan function ada di tabel **Function (8)** di atas; signature, parameter, dan deskripsi lengkap tiap function ada di [`docs/DATABASE.md`](docs/DATABASE.md) §2.
+
 **Mencoba trigger bekerja** (contoh — masing-masing akan ditolak dengan pesan Bahasa Indonesia):
 
 ```sql
