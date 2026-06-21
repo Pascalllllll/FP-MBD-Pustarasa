@@ -64,7 +64,6 @@ async function remove(id) {
   return res.affectedRows > 0;
 }
 
-// View-backed reads ---------------------------------------------------
 const daily = () => query(`SELECT * FROM vw_kunjungan_harian`);
 const peakHours = () => query(`SELECT * FROM vw_jam_ramai`);
 

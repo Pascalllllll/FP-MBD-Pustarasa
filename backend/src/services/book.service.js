@@ -8,7 +8,6 @@ const list = (search) => repo.findAll(search);
 async function get(id) {
   const row = await repo.findById(id);
   if (!row) throw ApiError.notFound('Buku tidak ditemukan');
-  // enrich with live availability + same-genre recommendations
   const [ketersediaan, rekomendasi] = await Promise.all([
     repo.checkAvailability(id),
     repo.recommendByGenre(row.Jenis_b),

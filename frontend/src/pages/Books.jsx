@@ -40,7 +40,6 @@ export default function Books() {
   const [search, setSearch] = useState('');
   const [listError, setListError] = useState('');
 
-  // form modal
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({});
@@ -48,7 +47,6 @@ export default function Books() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [saving, setSaving] = useState(false);
 
-  // detail modal
   const [detailOpen, setDetailOpen] = useState(false);
   const [detail, setDetail] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
@@ -193,7 +191,6 @@ export default function Books() {
         }
       />
 
-      {/* Form modal */}
       <Modal
         open={formOpen}
         onClose={() => setFormOpen(false)}

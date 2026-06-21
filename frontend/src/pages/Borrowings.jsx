@@ -25,12 +25,10 @@ export default function Borrowings() {
   const [search, setSearch] = useState('');
   const [listError, setListError] = useState('');
 
-  // reference data
   const [visitors, setVisitors] = useState([]);
   const [librarians, setLibrarians] = useState([]);
   const [books, setBooks] = useState([]);
 
-  // create form
   const [open, setOpen] = useState(false);
   const [nik, setNik] = useState('');
   const [nikPt, setNikPt] = useState('');
@@ -41,7 +39,6 @@ export default function Borrowings() {
   const [formError, setFormError] = useState('');
   const [busy, setBusy] = useState(false);
 
-  // detail
   const [detail, setDetail] = useState(null);
   const [detailOpen, setDetailOpen] = useState(false);
 
@@ -172,7 +169,6 @@ export default function Borrowings() {
         empty="Belum ada transaksi peminjaman."
       />
 
-      {/* Create modal */}
       <Modal
         open={open}
         onClose={() => setOpen(false)}
@@ -221,7 +217,6 @@ export default function Borrowings() {
           </div>
         </div>
 
-        {/* Book picker */}
         <div className="mt-5">
           <label className="label">Tambah Buku</label>
           <div className="flex gap-2">
@@ -278,7 +273,6 @@ export default function Borrowings() {
         </div>
       </Modal>
 
-      {/* Detail modal */}
       <Modal open={detailOpen} onClose={() => setDetailOpen(false)} title="Detail Peminjaman" wide>
         {!detail ? (
           <p className="py-8 text-center text-muted">Memuat…</p>

@@ -2,7 +2,6 @@
 
 const { body } = require('express-validator');
 
-// Shared fragments ----------------------------------------------------
 const nik = (field, label) =>
   body(field)
     .trim()
@@ -16,13 +15,11 @@ const optionalEmail = (field) =>
   body(field).optional({ nullable: true, checkFalsy: true })
     .isEmail().withMessage('Format email tidak valid');
 
-// Auth ----------------------------------------------------------------
 const login = [
   requiredStr('username', 'Username'),
   requiredStr('password', 'Kata sandi'),
 ];
 
-// Pengunjung ----------------------------------------------------------
 // Email_k is NOT NULL in the schema and trg_validasi_email_pengunjung is
 // the one that actually judges its format (must contain '@' and '.') — we
 // only check it's non-empty here, not that it's a well-formed email, so
@@ -40,7 +37,6 @@ const visitorUpdate = [
   requiredStr('Email_k', 'Email'),
 ];
 
-// Buku ----------------------------------------------------------------
 const bookCreate = [
   requiredStr('Judul_b', 'Judul'),
   requiredStr('Jenis_b', 'Jenis'),
@@ -49,7 +45,6 @@ const bookCreate = [
   requiredStr('Kualitas_b', 'Kualitas'),
 ];
 
-// Makanan -------------------------------------------------------------
 const foodCreate = [
   requiredStr('Nama_mk', 'Nama makanan'),
   requiredStr('Jenis_mk', 'Jenis'),
@@ -58,7 +53,6 @@ const foodCreate = [
     .isIn(['Ada', 'Habis']).withMessage("Status harus 'Ada' atau 'Habis'"),
 ];
 
-// Pustakawan ----------------------------------------------------------
 const librarianCreate = [
   nik('NIK_pt', 'NIK'),
   requiredStr('Nama_pt', 'Nama'),
@@ -67,7 +61,6 @@ const librarianCreate = [
   optionalEmail('Email_pt'),
 ];
 
-// Penjual -------------------------------------------------------------
 const sellerCreate = [
   nik('NIK_pj', 'NIK'),
   requiredStr('Nama_pj', 'Nama'),
@@ -75,13 +68,11 @@ const sellerCreate = [
   optionalEmail('Email_pj'),
 ];
 
-// Metode pembayaran ---------------------------------------------------
 const paymentCreate = [
   requiredStr('Instansi_mp', 'Instansi'),
   requiredStr('Jenis_mp', 'Jenis'),
 ];
 
-// Kunjungan -----------------------------------------------------------
 // waktuMasuk/waktuKeluar are optional — when omitted the server uses "now".
 // When given (e.g. backdating a forgotten check-out), only the shape is
 // checked here; trg_validasi_waktu_kunjung is what rejects an exit time
@@ -96,7 +87,6 @@ const checkOut = [
     .isISO8601().withMessage('Waktu keluar tidak valid'),
 ];
 
-// Peminjaman ----------------------------------------------------------
 const borrowingCreate = [
   nik('nik', 'NIK pengunjung'),
   nik('nikPt', 'NIK pustakawan'),
@@ -106,7 +96,6 @@ const borrowingCreate = [
   body('items.*.id_b').trim().notEmpty().withMessage('ID buku wajib'),
 ];
 
-// Pemesanan -----------------------------------------------------------
 const orderCheckout = [
   nik('nik', 'NIK pengunjung'),
   nik('nikPj', 'NIK penjual'),

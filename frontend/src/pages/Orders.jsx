@@ -136,7 +136,6 @@ function PosScreen({ user }) {
 
   return (
     <div className="grid gap-5 lg:grid-cols-[1fr_360px]">
-      {/* Menu grid */}
       <div>
         <input
           className="input mb-3"
@@ -173,7 +172,6 @@ function PosScreen({ user }) {
         )}
       </div>
 
-      {/* Cart panel */}
       <div className="card sticky top-20 h-fit p-4">
         <div className="mb-3 flex items-center gap-2">
           <IconCart className="h-5 w-5 text-canteen-ink" />
@@ -270,7 +268,6 @@ function PosScreen({ user }) {
         </button>
       </div>
 
-      {/* Receipt modal */}
       <Modal
         open={!!receipt}
         onClose={() => setReceipt(null)}

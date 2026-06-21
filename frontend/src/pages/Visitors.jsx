@@ -195,7 +195,6 @@ export default function Visitors() {
         }
       />
 
-      {/* Form modal */}
       <Modal
         open={formOpen}
         onClose={() => setFormOpen(false)}

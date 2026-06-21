@@ -79,7 +79,6 @@ async function checkout(data) {
   }
 }
 
-// View-backed reads ---------------------------------------------------
 const daily = () => query(`SELECT * FROM vw_penjualan_harian`);
 const byType = () => query(`SELECT * FROM vw_penjualan_per_jenis`);
 

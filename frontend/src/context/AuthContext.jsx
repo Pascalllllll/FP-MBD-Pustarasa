@@ -7,7 +7,6 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Bootstrap from an existing token on first load
   useEffect(() => {
     let active = true;
     async function boot() {

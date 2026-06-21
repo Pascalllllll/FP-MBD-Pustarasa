@@ -19,6 +19,8 @@ npm run setup   # instal dependensi backend+frontend, lalu impor basis data
 npm run dev     # jalankan backend (:4000) & frontend (:5173) bersamaan
 ```
 
+Kedua perintah berjalan lewat Node.js, jadi identik di Windows (cmd.exe atau PowerShell), macOS, dan Linux — tidak ada langkah tambahan untuk Windows di jalur ini.
+
 `npm run setup` akan:
 1. Membuat `backend/.env` dan `frontend/.env` dari `.env.example` bila belum ada.
 2. Menjalankan `npm install` di `backend/` dan `frontend/`.
@@ -57,6 +59,12 @@ mysql -u root -p < 07_seed_accounts.sql    # akun login (bcrypt)
 > ```
 > (skrip `01_schema.sql` sudah `CREATE DATABASE pustarasa` dan `USE`-nya.)
 
+> Alternatif satu baris (Windows — PowerShell): operator `<` tidak didukung PowerShell, jadi pipe-kan isi file lewat `Get-Content`:
+> ```powershell
+> Get-ChildItem -Filter "0*.sql" | Sort-Object Name | ForEach-Object { Get-Content $_.FullName | mysql -u root -p }
+> ```
+> Alternatif (Windows — Command Prompt): `cmd.exe` mendukung `<` seperti bash, jadi ketujuh baris `mysql -u root -p < 0X_*.sql` di atas bisa dipakai langsung tanpa perubahan.
+
 Verifikasi:
 
 ```sql
@@ -78,6 +86,8 @@ cp .env.example .env          # lalu sesuaikan kredensial MySQL
 npm install
 npm run dev                   # mode pengembangan (auto-reload), atau: npm start
 ```
+
+> Windows: ganti `cp .env.example .env` dengan `copy .env.example .env` (Command Prompt) atau `Copy-Item .env.example .env` (PowerShell). Sisa perintah (`npm install`, `npm run dev`) sama persis.
 
 Variabel `.env` penting:
 
@@ -107,6 +117,8 @@ cp .env.example .env          # default sudah benar (VITE_API_BASE=/api)
 npm install
 npm run dev
 ```
+
+> Windows: ganti `cp` dengan `copy .env.example .env` (Command Prompt) atau `Copy-Item .env.example .env` (PowerShell).
 
 Frontend berjalan di `http://localhost:5173`. Permintaan `/api/*` otomatis diteruskan (proxy) ke backend `:4000`, jadi tidak ada masalah CORS saat pengembangan.
 
@@ -142,3 +154,4 @@ Sajikan isi `frontend/dist` lewat web server statis, dan arahkan `VITE_API_BASE`
 | Login gagal terus | `07_seed_accounts.sql` belum dijalankan | Jalankan skrip akun, atau `npm run seed:accounts` |
 | `This function has none of DETERMINISTIC…` saat impor | Variabel `log_bin_trust_function_creators` mati | Sudah ditangani: fungsi dideklarasikan `READS SQL DATA` (lihat DATABASE.md) |
 | Frontend tak bisa memuat data | Backend belum jalan / port beda | Pastikan backend di `:4000` |
+| `The '<' operator is reserved for future use` (Windows) | PowerShell tak mendukung redirection `<` | Pakai `Get-Content file.sql \| mysql -u root -p`, atau jalankan dari Command Prompt (cmd.exe) yang mendukung `<` |

@@ -64,7 +64,6 @@ async function remove(id) {
   return res.affectedRows > 0;
 }
 
-// View-backed reads ---------------------------------------------------
 const favorites = () => query(`SELECT * FROM vw_makanan_favorit`);
 const aboveAverage = () => query(`SELECT * FROM vw_makanan_diatas_rata`);
 const neverOrdered = () => query(`SELECT * FROM vw_makanan_belum_dipesan`);

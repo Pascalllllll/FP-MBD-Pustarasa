@@ -22,7 +22,6 @@ async function nextId(table, column, prefix, width, conn = pool) {
   return `${prefix}${String(n).padStart(width, '0')}`;
 }
 
-// Convenience wrappers per entity ------------------------------------
 const generators = {
   buku: (c) => nextId('Buku', 'ID_b', 'B', 5, c),
   makanan: (c) => nextId('Makanan', 'ID_mk', 'MK', 4, c),

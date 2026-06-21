@@ -8,7 +8,6 @@ const { query, pool } = require('../config/db');
  * reachable through the API. Grouped by service for the UI.
  */
 const VIEW_REGISTRY = {
-  // --- Perpustakaan (library) ---
   status_buku: { view: 'vw_status_buku', title: 'Status Semua Buku', service: 'perpustakaan' },
   buku_terpopuler: { view: 'vw_buku_terpopuler', title: 'Buku Terpopuler', service: 'perpustakaan' },
   peminjaman_harian: { view: 'vw_peminjaman_harian', title: 'Peminjaman per Hari', service: 'perpustakaan' },
@@ -19,12 +18,10 @@ const VIEW_REGISTRY = {
   pengunjung_belum_meminjam: { view: 'vw_pengunjung_belum_meminjam', title: 'Pengunjung Belum Meminjam', service: 'perpustakaan' },
   buku_terbaru: { view: 'vw_buku_terbaru', title: 'Buku Terbaru', service: 'perpustakaan' },
 
-  // --- Kunjungan (visits) ---
   kunjungan_harian: { view: 'vw_kunjungan_harian', title: 'Kunjungan per Hari', service: 'kunjungan' },
   jam_ramai: { view: 'vw_jam_ramai', title: 'Jam Ramai', service: 'kunjungan' },
   pengunjung_tanpa_pemesanan: { view: 'vw_pengunjung_tanpa_pemesanan', title: 'Pengunjung Tanpa Pemesanan', service: 'kunjungan' },
 
-  // --- Kantin (canteen) ---
   status_makanan: { view: 'vw_status_makanan', title: 'Status Ketersediaan Makanan', service: 'kantin' },
   makanan_favorit: { view: 'vw_makanan_favorit', title: 'Makanan Favorit', service: 'kantin' },
   penjualan_per_jenis: { view: 'vw_penjualan_per_jenis', title: 'Penjualan per Jenis', service: 'kantin' },

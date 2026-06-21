@@ -16,14 +16,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 if (env.nodeEnv !== 'test') app.use(morgan('dev'));
 
-// Health check
 app.get('/health', (_req, res) =>
   res.json({ success: true, service: 'pustarasa-api', time: new Date().toISOString() })
 );
 
 app.use('/api', apiRoutes);
 
-// 404 + central error handling
 app.use(notFound);
 app.use(errorHandler);
 

@@ -23,12 +23,10 @@ export default function Layout() {
 
   return (
     <div className="flex min-h-screen bg-paper">
-      {/* Desktop sidebar */}
       <aside className="sticky top-0 hidden h-screen lg:block">
         <Sidebar />
       </aside>
 
-      {/* Mobile drawer */}
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-ink/40" onClick={() => setMobileOpen(false)} />

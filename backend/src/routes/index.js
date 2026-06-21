@@ -15,7 +15,6 @@ const borrowingRoutes = require('./borrowing.routes');
 const orderRoutes = require('./order.routes');
 const reportRoutes = require('./report.routes');
 
-// Public
 router.use('/auth', authRoutes);
 
 // Everything below requires a valid JWT

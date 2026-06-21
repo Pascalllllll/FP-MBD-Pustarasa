@@ -94,7 +94,6 @@ export default function Reports() {
         </div>
       )}
 
-      {/* Daily recap card */}
       <div className="card mb-5 p-5">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
@@ -124,7 +123,6 @@ export default function Reports() {
       </div>
 
       <div className="grid gap-5 lg:grid-cols-[260px_1fr]">
-        {/* Report list */}
         <div className="card h-fit p-3">
           {loadingList ? (
             <p className="p-4 text-center text-sm text-muted">Memuat…</p>
@@ -155,7 +153,6 @@ export default function Reports() {
           )}
         </div>
 
-        {/* Report content */}
         <div className="card overflow-hidden">
           <div className="border-b border-line px-4 py-3">
             <h3 className="font-display font-bold">{data?.title || 'Pilih laporan'}</h3>

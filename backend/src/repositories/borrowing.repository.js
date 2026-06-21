@@ -107,7 +107,6 @@ async function returnBook(idDpm, tanggal) {
   }
 }
 
-// View-backed reads ---------------------------------------------------
 const daily = () => query(`SELECT * FROM vw_peminjaman_harian`);
 const outstanding = () => query(`SELECT * FROM vw_buku_belum_kembali`);
 const perVisitor = () => query(`SELECT * FROM vw_buku_per_pengunjung`);

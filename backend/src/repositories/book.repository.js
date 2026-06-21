@@ -88,7 +88,6 @@ async function remove(id) {
   return res.affectedRows > 0;
 }
 
-// View-backed reads ---------------------------------------------------
 const popular = () => query(`SELECT * FROM vw_buku_terpopuler`);
 const newest = () => query(`SELECT * FROM vw_buku_terbaru`);
 const statusList = () => query(`SELECT * FROM vw_status_buku`);

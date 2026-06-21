@@ -51,7 +51,6 @@ export default function Login() {
               'radial-gradient(120% 120% at 0% 0%, #7C3AED 0%, #4C1D95 45%, #2E1065 100%)',
           }}
         />
-        {/* warm canteen glow bleeding in from the bottom-right */}
         <div
           className="animate-blob absolute -bottom-32 -right-24 h-96 w-96 rounded-full opacity-40 blur-3xl"
           style={{ background: 'radial-gradient(circle, #F59E0B 0%, transparent 70%)' }}
@@ -84,7 +83,6 @@ export default function Login() {
         </div>
       </div>
 
-      {/* Form panel */}
       <div className="flex items-center justify-center bg-paper px-6 py-12">
         <div className="w-full max-w-sm">
           <div className="mb-8 lg:hidden">

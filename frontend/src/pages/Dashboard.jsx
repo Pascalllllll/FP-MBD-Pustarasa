@@ -73,7 +73,6 @@ export default function Dashboard() {
         <div className="space-y-8">
           {/* DUAL-WORLD SPLIT — the signature layout */}
           <div className="grid gap-6 lg:grid-cols-2">
-            {/* Perpustakaan world */}
             <section className="animate-fade-in-up rounded-xl2 border border-library/15 bg-library-soft/40 p-5">
               <WorldHeader tone="library" kicker="Dunia Buku" title="Perpustakaan" />
               <div className="grid grid-cols-2 gap-3">
@@ -84,7 +83,6 @@ export default function Dashboard() {
               </div>
             </section>
 
-            {/* Kantin world */}
             <section
               className="animate-fade-in-up rounded-xl2 border border-canteen/20 bg-canteen-soft/40 p-5"
               style={{ animationDelay: '0.08s' }}
@@ -99,7 +97,6 @@ export default function Dashboard() {
             </section>
           </div>
 
-          {/* Kunjungan strip */}
           <section className="animate-fade-in-up" style={{ animationDelay: '0.16s' }}>
             <WorldHeader tone="library" kicker="Aktivitas" title="Kunjungan Ruang Baca" />
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -110,7 +107,6 @@ export default function Dashboard() {
             </div>
           </section>
 
-          {/* Daily recap — sourced from stored procedure sp_rekap_harian */}
           {recap && (
             <section className="card animate-fade-in-up p-5" style={{ animationDelay: '0.24s' }}>
               <div className="mb-4 flex items-center justify-between">

@@ -8,7 +8,7 @@ Sistem informasi terpadu **Perpustakaan + Kantin PustaRasa**. Seluruh logika bis
 
 ## Setup Cepat
 
-Butuh **MySQL 8** dan **Node.js 18+**.
+Butuh **MySQL 8** dan **Node.js 18+**. Berlaku untuk Linux, macOS, dan Windows.
 
 ### Opsi A — Otomatis
 
@@ -17,15 +17,24 @@ npm run setup   # instal dependensi backend+frontend & impor basis data (akan mi
 npm run dev     # jalankan backend (:4000) & frontend (:5173) sekaligus
 ```
 
-`npm run setup` aman dijalankan ulang: jika basis data `pustarasa` sudah ada, impor akan dilewati. Untuk memuat ulang dari nol (timpa data): `npm run db:reset`.
+Kedua perintah ini lewat Node.js sepenuhnya, jadi identik di Windows (cmd/PowerShell), macOS, dan Linux — tidak perlu langkah tambahan. `npm run setup` aman dijalankan ulang: jika basis data `pustarasa` sudah ada, impor akan dilewati. Untuk memuat ulang dari nol (timpa data): `npm run db:reset`.
 
 ### Opsi B — Manual (tiga langkah)
 
 #### 1. Basis data — jalankan 7 file SQL berurutan
 
+**Linux/macOS (bash/zsh):**
 ```bash
 cd database
 for f in 0*.sql; do mysql -u root -p < "$f" || break; done
+```
+
+**Windows — Command Prompt:** sintaks di atas (`mysql -u root -p < file.sql`) berfungsi sama persis, cukup jalankan ketujuh baris satu per satu (lihat tabel di `docs/SETUP.md`).
+
+**Windows — PowerShell:** `<` redirection tidak didukung, gunakan pipe:
+```powershell
+cd database
+Get-ChildItem -Filter "0*.sql" | Sort-Object Name | ForEach-Object { Get-Content $_.FullName | mysql -u root -p }
 ```
 
 > Urutan **wajib** 01 → 07. Data contoh (`05`) sengaja dimuat **sebelum** trigger (`06`) agar trigger tidak ikut memvalidasi data lama.
@@ -49,6 +58,8 @@ npm install
 npm run dev               # http://localhost:4000
 ```
 
+> Windows: ganti `cp` dengan `copy .env.example .env` (Command Prompt) atau `Copy-Item .env.example .env` (PowerShell).
+
 #### 3. Frontend
 
 ```bash
@@ -57,6 +68,8 @@ cp .env.example .env
 npm install
 npm run dev               # http://localhost:5173
 ```
+
+> Windows: sama seperti langkah Backend di atas — pakai `copy` atau `Copy-Item`.
 
 Buka **http://localhost:5173** lalu login.
 
