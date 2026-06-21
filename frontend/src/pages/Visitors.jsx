@@ -6,7 +6,7 @@ import DataTable from '../components/DataTable.jsx';
 import Modal from '../components/Modal.jsx';
 import Alert from '../components/Alert.jsx';
 import FormField from '../components/FormField.jsx';
-import { formatRupiah, formatDateTime } from '../lib/format.js';
+import { formatRupiah } from '../lib/format.js';
 import { IconPlus, IconEdit, IconTrash } from '../components/icons.jsx';
 
 const CREATE_FIELDS = [
@@ -37,7 +37,6 @@ export default function Visitors() {
 
   const [detailOpen, setDetailOpen] = useState(false);
   const [detail, setDetail] = useState(null);
-  const [history, setHistory] = useState([]);
   const [detailLoading, setDetailLoading] = useState(false);
 
   const load = useCallback(async (q) => {
@@ -109,14 +108,9 @@ export default function Visitors() {
     setDetailOpen(true);
     setDetailLoading(true);
     setDetail(null);
-    setHistory([]);
     try {
-      const [profile, hist] = await Promise.all([
-        api.get(`/pengunjung/${row.NIK_k}`),
-        api.get(`/pengunjung/${row.NIK_k}/address-history`),
-      ]);
+      const profile = await api.get(`/pengunjung/${row.NIK_k}`);
       setDetail(profile);
-      setHistory(hist);
     } catch (e) {
       setListError(e.message);
       setDetailOpen(false);
@@ -217,8 +211,7 @@ export default function Visitors() {
           <p className="mb-3 rounded-lg bg-paper px-3 py-2 text-xs text-muted">
             {isAdmin
               ? 'Sebagai admin, Anda dapat mengubah NIK (mis. memperbaiki salah input). Peran lain akan ditolak oleh trigger basis data.'
-              : 'Mengubah NIK akan ditolak oleh trigger basis data (trg_validasi_update_nik) — hanya admin yang dapat mengubahnya.'}{' '}
-            Perubahan alamat dicatat otomatis ke log.
+              : 'Mengubah NIK akan ditolak oleh trigger basis data (trg_validasi_update_nik) — hanya admin yang dapat mengubahnya.'}
           </p>
         )}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -235,7 +228,7 @@ export default function Visitors() {
         </div>
       </Modal>
 
-      {/* Profile detail — exercises 4 functions + address log trigger output */}
+      {/* Profile detail — exercises 4 functions */}
       <Modal open={detailOpen} onClose={() => setDetailOpen(false)} title="Profil Pengunjung" wide>
         {detailLoading ? (
           <p className="py-8 text-center text-muted">Memuat…</p>
@@ -260,28 +253,6 @@ export default function Visitors() {
               <span className="font-mono">sf_durasi_kunjungan_rata_rata</span>, dan{' '}
               <span className="font-mono">sf_cek_status_keanggotaan</span>.
             </p>
-
-            <div>
-              <p className="label mb-2">Riwayat Perubahan Alamat (log trigger)</p>
-              {history.length === 0 ? (
-                <p className="rounded-lg border border-dashed border-line px-3 py-4 text-center text-sm text-muted">
-                  Belum ada perubahan alamat tercatat.
-                </p>
-              ) : (
-                <ul className="space-y-2">
-                  {history.map((h) => (
-                    <li key={h.ID_log} className="rounded-lg border border-line p-3 text-sm">
-                      <p className="text-xs text-muted">{formatDateTime(h.Waktu_Ubah)}</p>
-                      <p className="mt-1">
-                        <span className="text-muted line-through">{h.Alamat_Lama || '—'}</span>
-                        {'  →  '}
-                        <span className="font-medium">{h.Alamat_Baru || '—'}</span>
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
           </div>
         ) : (
           <p className="py-8 text-center text-muted">Data tidak tersedia.</p>

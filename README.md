@@ -1,6 +1,6 @@
 # PustaRasa
 
-Sistem informasi terpadu **Perpustakaan + Kantin PustaRasa**. Seluruh logika bisnis berada di dalam basis data (14 trigger, 8 function, 3 procedure, 20 view) dan dipanggil oleh aplikasi — bukan ditiru di kode.
+Sistem informasi terpadu **Perpustakaan + Kantin PustaRasa**. Seluruh logika bisnis berada di dalam basis data (13 trigger, 8 function, 3 procedure, 20 view) dan dipanggil oleh aplikasi — bukan ditiru di kode.
 
 **Stack:** MySQL 8 · Node/Express · React + Vite + Tailwind.
 
@@ -46,7 +46,7 @@ Get-ChildItem -Filter "0*.sql" | Sort-Object Name | ForEach-Object { Get-Content
 | 03 | `03_procedures.sql` | 3 procedure (`sp_*`) |
 | 04 | `04_views.sql` | 20 view (`vw_*`) |
 | 05 | `05_seed_data.sql` | **data contoh dari file SQL Anda** |
-| 06 | `06_triggers.sql` | 14 trigger |
+| 06 | `06_triggers.sql` | 13 trigger |
 | 07 | `07_seed_accounts.sql` | akun login |
 
 #### 2. Backend
@@ -113,7 +113,7 @@ Setiap objek basis data benar-benar dipanggil oleh backend (lihat `backend/src/r
 | `sp_pengembalian_buku` | `borrowing.repository.js` → `borrowing.service` | **Pengembalian** → "Konfirmasi Pengembalian" |
 | `sp_rekap_harian` | `report.repository.js` | **Dasbor** (kartu Rekap Harian) & **Laporan** (pemilih tanggal) |
 
-### Trigger (14)
+### Trigger (13)
 
 | Trigger | Waktu/Tabel | Dipakai di fitur |
 |---|---|---|
@@ -130,13 +130,12 @@ Setiap objek basis data benar-benar dipanggil oleh backend (lihat `backend/src/r
 | `trg_validasi_email_pengunjung` | BEFORE INSERT · Pengunjung | Menjaga **Pengunjung** saat membuat data baru (format email) |
 | `trg_validasi_email_pengunjung_update` | BEFORE UPDATE · Pengunjung | Menjaga **Pengunjung** saat mengubah email data yang sudah ada |
 | `trg_validasi_update_nik` | BEFORE UPDATE · Pengunjung | Menjaga **Pengunjung** — NIK tak bisa diubah, **kecuali oleh peran `admin`** |
-| `trg_log_perubahan_alamat` | AFTER UPDATE · Pengunjung | Mengisi log → tampil di **Pengunjung** (riwayat alamat) |
 
 Setiap trigger yang menolak aksi (SIGNAL SQLSTATE 45000) otomatis memunculkan **pop-up notifikasi** di kanan-atas layar (lihat `frontend/src/lib/toast.js` + `errorHandler.js`), bukan cuma pesan error inline. Semua trigger validasi di atas benar-benar bisa dipicu lewat web — UI sengaja **tidak** menyembunyikan pilihan yang akan ditolak (menu habis, buku sedang dipinjam, dst.) supaya trigger-nya, bukan kode aplikasi, yang memutuskan.
 
 > **Mengapa ada `_update` terpisah untuk waktu_kunjung/umur_pustakawan/email_pengunjung?** Tiga trigger ini awalnya hanya `BEFORE INSERT`, sehingga tidak pernah aktif saat data yang **sudah ada** diubah lewat web — check-out memakai `UPDATE`, begitu juga edit tanggal lahir pustakawan atau edit email pengunjung. Trigger pendamping `BEFORE UPDATE` dengan logika identik ditambahkan agar aturan benar-benar berlaku di kedua jalur, bukan cuma saat data baru dibuat.
 
-> **Mengapa `trg_validasi_update_nik` bisa membedakan admin?** Backend memakai satu pool koneksi MySQL bersama untuk semua peran, jadi trigger tidak otomatis tahu siapa pemanggilnya. Untuk itu, tepat sebelum `UPDATE Pengunjung`, backend menjalankan `SET @app_role = '<peran>'` pada koneksi yang sama (`visitor.repository.js`), dan trigger membaca variabel sesi ini sebelum memutuskan SIGNAL atau tidak. Keputusan izin tetap berada **di dalam trigger** — aplikasi hanya melapor konteks peran, tidak meniru aturannya. Karena semua FK ke `Pengunjung.NIK_k` memakai `ON UPDATE CASCADE`, perubahan NIK oleh admin otomatis merambat ke `Waktu_kunjung`, `Peminjaman`, `Pemesanan`, dan `Log_Perubahan_Alamat`.
+> **Mengapa `trg_validasi_update_nik` bisa membedakan admin?** Backend memakai satu pool koneksi MySQL bersama untuk semua peran, jadi trigger tidak otomatis tahu siapa pemanggilnya. Untuk itu, tepat sebelum `UPDATE Pengunjung`, backend menjalankan `SET @app_role = '<peran>'` pada koneksi yang sama (`visitor.repository.js`), dan trigger membaca variabel sesi ini sebelum memutuskan SIGNAL atau tidak. Keputusan izin tetap berada **di dalam trigger** — aplikasi hanya melapor konteks peran, tidak meniru aturannya. Karena semua FK ke `Pengunjung.NIK_k` memakai `ON UPDATE CASCADE`, perubahan NIK oleh admin otomatis merambat ke `Waktu_kunjung`, `Peminjaman`, dan `Pemesanan`.
 
 ### View (20)
 
@@ -233,13 +232,12 @@ Setiap langkah di bawah ini sengaja memilih input yang **akan ditolak**, supaya 
 
 ### Trigger otomatis (tanpa pop-up — bekerja diam-diam)
 
-Tiga trigger ini tidak pernah menolak apa pun, jadi tidak ada pop-up. Cara memverifikasinya adalah dengan melihat efeknya:
+Dua trigger ini tidak pernah menolak apa pun, jadi tidak ada pop-up. Cara memverifikasinya adalah dengan melihat efeknya:
 
 | Trigger | Cara melihat efeknya |
 |---|---|
 | `trg_update_buku_dipinjam` | Pinjam sebuah buku lewat **Peminjaman**, lalu cek **Katalog Buku** — status buku itu otomatis berubah jadi "Dipinjam". |
 | `trg_update_buku_dikembalikan` | Konfirmasi pengembalian buku tersebut lewat **Pengembalian** — status di **Katalog Buku** otomatis kembali "Tidak Dipinjam". |
-| `trg_log_perubahan_alamat` | Ubah field Alamat pada **Pengunjung**, lalu klik nama pengunjung tersebut untuk membuka drawer profil — perubahan alamat lama→baru tercatat di "Riwayat Perubahan Alamat". |
 
 > **Catatan soal `trg_validasi_waktu_kunjung` (versi INSERT, bukan `_update`).** Trigger ini hanya bisa dipicu oleh `INSERT` yang sudah menyertakan `Waktu_Keluar_wk` sejak baris dibuat — tapi jalur check-in di web selalu menyisipkan baris dengan `Waktu_Keluar_wk = NULL` (diisi belakangan saat check-out, lewat `UPDATE`). Karena itu versi INSERT ini **tidak bisa** dipicu dari web sama sekali; yang bisa dipicu dari web adalah pasangannya, `trg_validasi_waktu_kunjung_update`, di atas. Untuk menguji versi INSERT-nya, jalankan langsung lewat `mysql` CLI seperti contoh di bagian "Menampilkan Trigger" di bawah.
 

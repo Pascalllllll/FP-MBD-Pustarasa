@@ -1,5 +1,5 @@
 -- =====================================================================
---  PustaRasa — Triggers (14)
+--  PustaRasa — Triggers (13)
 --  Reproduced from the source document (corrected where needed) so the
 --  database enforces its own rules. The web app never duplicates these.
 --
@@ -25,7 +25,6 @@ DROP TRIGGER IF EXISTS trg_validasi_umur_pustakawan_update;
 DROP TRIGGER IF EXISTS trg_validasi_email_pengunjung;
 DROP TRIGGER IF EXISTS trg_validasi_email_pengunjung_update;
 DROP TRIGGER IF EXISTS trg_validasi_update_nik;
-DROP TRIGGER IF EXISTS trg_log_perubahan_alamat;
 
 DELIMITER //
 
@@ -177,21 +176,6 @@ BEGIN
   IF OLD.NIK_k <> NEW.NIK_k AND IFNULL(@app_role, '') <> 'admin' THEN
     SIGNAL SQLSTATE '45000'
       SET MESSAGE_TEXT = 'Kesalahan: NIK Pengunjung tidak boleh diubah! Hanya admin yang dapat mengubah NIK (mis. memperbaiki salah input).';
-  END IF;
-END //
-
--- 10b. Address-change audit log (the behaviour the source doc's title/
---      description promised). Both can coexist on the same table/event.
--- Logs NEW.NIK_k, not OLD: if admin changes NIK and address in the same
--- UPDATE, OLD.NIK_k no longer exists in Pengunjung by the time this AFTER
--- trigger runs (the cascade already moved it), which would fail the FK.
-CREATE TRIGGER trg_log_perubahan_alamat
-AFTER UPDATE ON Pengunjung
-FOR EACH ROW
-BEGIN
-  IF NOT (OLD.Alamat_k <=> NEW.Alamat_k) THEN
-    INSERT INTO Log_Perubahan_Alamat (Pengunjung_NIK, Alamat_Lama, Alamat_Baru)
-    VALUES (NEW.NIK_k, OLD.Alamat_k, NEW.Alamat_k);
   END IF;
 END //
 

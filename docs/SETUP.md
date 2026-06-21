@@ -44,12 +44,12 @@ Jalankan ketujuh skrip SQL **secara berurutan**. Urutan penting: skema dulu, lal
 ```bash
 cd database
 
-mysql -u root -p < 01_schema.sql          # 11 tabel inti + 2 tabel app
+mysql -u root -p < 01_schema.sql          # 11 tabel inti + 1 tabel app
 mysql -u root -p < 02_functions.sql        # 8 stored function (sf_*)
 mysql -u root -p < 03_procedures.sql       # 3 stored procedure (sp_*)
 mysql -u root -p < 04_views.sql            # 20 view analitis (vw_*)
 mysql -u root -p < 05_seed_data.sql        # data contoh (dari file SQL Anda)
-mysql -u root -p < 06_triggers.sql         # 14 trigger (dipasang SETELAH data)
+mysql -u root -p < 06_triggers.sql         # 13 trigger (dipasang SETELAH data)
 mysql -u root -p < 07_seed_accounts.sql    # akun login (bcrypt)
 ```
 
@@ -69,10 +69,10 @@ Verifikasi:
 
 ```sql
 USE pustarasa;
-SHOW TABLES;                 -- 13 tabel (11 inti + Log_Perubahan_Alamat + app_account)
+SHOW TABLES;                 -- 12 tabel (11 inti + app_account)
 SHOW FUNCTION STATUS WHERE Db = 'pustarasa';   -- 8 baris
 SHOW PROCEDURE STATUS WHERE Db = 'pustarasa';  -- 3 baris
-SHOW TRIGGERS;                                  -- 14 baris
+SHOW TRIGGERS;                                  -- 13 baris
 SELECT COUNT(*) FROM information_schema.VIEWS WHERE TABLE_SCHEMA='pustarasa';  -- 20
 ```
 

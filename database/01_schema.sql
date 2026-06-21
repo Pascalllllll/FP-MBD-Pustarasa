@@ -1,11 +1,11 @@
 -- =====================================================================
 --  PustaRasa  ·  01_schema.sql
---  Skema basis data (11 tabel inti dari sumber + 2 tabel pendukung app).
+--  Skema basis data (11 tabel inti dari sumber + 1 tabel pendukung app).
 --
 --  Tabel inti & relasi mengikuti file sumber Anda PERSIS.
---  Dua tabel terakhir (Log_Perubahan_Alamat, app_account) ditambahkan
---  HANYA untuk kebutuhan aplikasi (audit alamat & login berbasis peran)
---  dan tidak mengubah struktur tabel inti. Lihat docs/DATABASE.md.
+--  Tabel terakhir (app_account) ditambahkan HANYA untuk kebutuhan
+--  aplikasi (login berbasis peran) dan tidak mengubah struktur tabel
+--  inti. Lihat docs/DATABASE.md.
 -- =====================================================================
 
 DROP database IF EXISTS pustarasa;
@@ -194,22 +194,9 @@ CREATE TABLE Detail_Pemesanan (
 -- TABEL PENDUKUNG APLIKASI (di luar ERD sumber)
 -- ---------------------------------------------------------------------
 
--- (1) Audit trail perubahan alamat pengunjung; diisi otomatis oleh
---     trigger trg_log_perubahan_alamat.
-CREATE TABLE Log_Perubahan_Alamat (
-    ID_log         BIGINT       NOT NULL AUTO_INCREMENT,
-    Pengunjung_NIK CHAR(16)     NOT NULL,
-    Alamat_Lama    VARCHAR(255) NULL,
-    Alamat_Baru    VARCHAR(255) NULL,
-    Waktu_Ubah     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (ID_log),
-    CONSTRAINT fk_log_pengunjung FOREIGN KEY (Pengunjung_NIK)
-        REFERENCES Pengunjung (NIK_k) ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- (2) Akun login aplikasi. Tidak ada pada ERD (staf tak punya sandi),
---     jadi ditambahkan terpisah. role 'pengunjung' = mode lihat-saja.
---     staff_nik opsional menautkan akun ke baris Pustakawan/Penjual.
+-- Akun login aplikasi. Tidak ada pada ERD (staf tak punya sandi),
+-- jadi ditambahkan terpisah. role 'pengunjung' = mode lihat-saja.
+-- staff_nik opsional menautkan akun ke baris Pustakawan/Penjual.
 CREATE TABLE app_account (
     id            INT          NOT NULL AUTO_INCREMENT,
     username      VARCHAR(50)  NOT NULL,

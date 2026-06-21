@@ -28,6 +28,4 @@ async function remove(nik) {
   if (!ok) throw ApiError.notFound('Pengunjung tidak ditemukan');
 }
 
-const addressHistory = (nik) => repo.addressHistory(nik);
-
-module.exports = { list, get, create, update, remove, addressHistory };
+module.exports = { list, get, create, update, remove };

@@ -19,8 +19,4 @@ const remove = asyncHandler(async (req, res) => {
   await service.remove(req.params.nik);
   res.json({ success: true, message: 'Pengunjung dihapus' });
 });
-const addressHistory = asyncHandler(async (req, res) => {
-  res.json({ success: true, data: await service.addressHistory(req.params.nik) });
-});
-
-module.exports = { list, get, create, update, remove, addressHistory };
+module.exports = { list, get, create, update, remove };

@@ -59,8 +59,7 @@ async function create(data) {
  * 45000) — unless the caller is admin. @app_role is a connection-scoped
  * session variable the trigger reads; it must be set on the same
  * connection right before the UPDATE, hence the dedicated pool connection
- * instead of the shared `query()` helper. Address changes are recorded
- * automatically by trg_log_perubahan_alamat into Log_Perubahan_Alamat.
+ * instead of the shared `query()` helper.
  */
 async function update(nik, data, role) {
   const conn = await pool.getConnection();
@@ -83,17 +82,6 @@ async function remove(nik) {
   return res.affectedRows > 0;
 }
 
-/** Address-change audit trail produced by the log trigger. */
-async function addressHistory(nik) {
-  return query(
-    `SELECT ID_log, Alamat_Lama, Alamat_Baru, Waktu_Ubah
-       FROM Log_Perubahan_Alamat
-      WHERE Pengunjung_NIK = ?
-      ORDER BY Waktu_Ubah DESC`,
-    [nik]
-  );
-}
-
 module.exports = {
-  findAll, findById, findProfile, create, update, remove, addressHistory,
+  findAll, findById, findProfile, create, update, remove,
 };

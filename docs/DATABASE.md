@@ -26,7 +26,6 @@ Basis data `pustarasa` memodelkan sebuah ruang baca yang menggabungkan **perpust
 
 | Tabel | Fungsi |
 |---|---|
-| `Log_Perubahan_Alamat` | Audit trail perubahan alamat pengunjung (diisi trigger) |
 | `app_account` | Akun login aplikasi (username, hash bcrypt, peran, tautan ke NIK staf). Peran: `admin`, `pustakawan`, `penjual`, dan `pengunjung` (mode lihat-saja) |
 
 ### Relasi (foreign key)
@@ -39,7 +38,6 @@ Penjual    1───∞ Makanan
 Pengunjung 1───∞ Pemesanan ∞───1 Penjual
 Pemesanan  ∞───1 Metode_pembayaran
 Pemesanan  1───∞ Detail_Pemesanan ∞───1 Makanan
-Pengunjung 1───∞ Log_Perubahan_Alamat
 ```
 
 Konvensi kunci bisnis: `Buku` = `B` + 5 digit (B00001); tabel lain = 2 huruf + 4 digit (`PM0001`, `DS0007`, …). `NIK` = 16 digit. ID transaksi dibuat berurutan oleh `MAX(...)+1` di dalam transaksi (lihat `idGenerator.js` dan prosedur).
@@ -73,7 +71,7 @@ Semua dideklarasikan `NOT DETERMINISTIC READS SQL DATA` karena membaca tabel.
 
 ---
 
-## 4. Triggers (14)
+## 4. Triggers (13)
 
 Trigger memakai `SIGNAL SQLSTATE '45000'` dengan pesan Bahasa Indonesia; backend menampilkannya apa adanya ke pengguna. Semua trigger validasi di bawah benar-benar bisa dipicu lewat web — frontend sengaja tidak menyembunyikan pilihan yang akan ditolak (menu "Habis" tetap muncul di kasir, buku "Sedang Dipinjam" tetap muncul di pemilih, kuantitas ≤ 0 tetap bisa diketik), supaya keputusan tolak/terima benar-benar berasal dari trigger, bukan dari kode aplikasi.
 
@@ -92,11 +90,10 @@ Trigger memakai `SIGNAL SQLSTATE '45000'` dengan pesan Bahasa Indonesia; backend
 | `trg_validasi_email_pengunjung` | BEFORE INSERT · Pengunjung | Format email harus valid (saat membuat data baru) |
 | `trg_validasi_email_pengunjung_update` | BEFORE UPDATE · Pengunjung | Aturan yang sama, saat mengubah data yang sudah ada |
 | `trg_validasi_update_nik` | BEFORE UPDATE · Pengunjung | NIK **immutable**, kecuali untuk peran `admin` (lihat catatan di bawah) |
-| `trg_log_perubahan_alamat` | AFTER UPDATE · Pengunjung | Catat alamat lama→baru ke `Log_Perubahan_Alamat`, ditautkan ke `NEW.NIK_k` |
 
-> **Mengapa 3 trigger punya pasangan `_update`?** `trg_validasi_waktu_kunjung`, `trg_validasi_umur_pustakawan`, dan `trg_validasi_email_pengunjung` semula hanya `BEFORE INSERT`. Itu cukup untuk data baru, tapi tidak pernah aktif saat data yang **sudah ada** diubah — check-out memakai `UPDATE Waktu_kunjung`, bukan `INSERT`, dan web juga mengizinkan admin mengubah tanggal lahir pustakawan atau email pengunjung yang sudah ada. Tanpa pasangan `BEFORE UPDATE` dengan logika identik, ketiga aturan itu bisa dilewati begitu saja lewat jalur edit. Ditemukan saat memverifikasi setiap trigger benar-benar teruji dari web (bukan cuma dari `mysql` CLI), lalu diperbaiki dengan menambah 3 trigger pendamping — jumlah total naik dari 11 menjadi 14.
+> **Mengapa 3 trigger punya pasangan `_update`?** `trg_validasi_waktu_kunjung`, `trg_validasi_umur_pustakawan`, dan `trg_validasi_email_pengunjung` semula hanya `BEFORE INSERT`. Itu cukup untuk data baru, tapi tidak pernah aktif saat data yang **sudah ada** diubah — check-out memakai `UPDATE Waktu_kunjung`, bukan `INSERT`, dan web juga mengizinkan admin mengubah tanggal lahir pustakawan atau email pengunjung yang sudah ada. Tanpa pasangan `BEFORE UPDATE` dengan logika identik, ketiga aturan itu bisa dilewati begitu saja lewat jalur edit. Ditemukan saat memverifikasi setiap trigger benar-benar teruji dari web (bukan cuma dari `mysql` CLI), lalu diperbaiki dengan menambah 3 trigger pendamping.
 
-> **`trg_validasi_update_nik` & peran admin.** Backend memakai satu pool koneksi MySQL bersama (bukan satu user DB per peran), jadi trigger tidak otomatis tahu peran pemanggil. Solusinya: tepat sebelum `UPDATE Pengunjung`, backend menjalankan `SET @app_role = '<peran-pemanggil>'` pada koneksi yang sama (lihat `visitor.repository.js`). Trigger membaca variabel sesi ini — `IF OLD.NIK_k <> NEW.NIK_k AND IFNULL(@app_role,'') <> 'admin' THEN SIGNAL ...` — sehingga **keputusan tetap di trigger**, aplikasi cuma melapor siapa yang memanggil. Akibatnya: pustakawan/penjual yang mencoba mengubah NIK selalu ditolak; admin boleh mengubahnya (mis. memperbaiki salah input NIK oleh pengunjung). Karena semua FK ke `Pengunjung.NIK_k` memakai `ON UPDATE CASCADE`, perubahan NIK oleh admin otomatis merambat ke `Waktu_kunjung`, `Peminjaman`, `Pemesanan`, dan `Log_Perubahan_Alamat`.
+> **`trg_validasi_update_nik` & peran admin.** Backend memakai satu pool koneksi MySQL bersama (bukan satu user DB per peran), jadi trigger tidak otomatis tahu peran pemanggil. Solusinya: tepat sebelum `UPDATE Pengunjung`, backend menjalankan `SET @app_role = '<peran-pemanggil>'` pada koneksi yang sama (lihat `visitor.repository.js`). Trigger membaca variabel sesi ini — `IF OLD.NIK_k <> NEW.NIK_k AND IFNULL(@app_role,'') <> 'admin' THEN SIGNAL ...` — sehingga **keputusan tetap di trigger**, aplikasi cuma melapor siapa yang memanggil. Akibatnya: pustakawan/penjual yang mencoba mengubah NIK selalu ditolak; admin boleh mengubahnya (mis. memperbaiki salah input NIK oleh pengunjung). Karena semua FK ke `Pengunjung.NIK_k` memakai `ON UPDATE CASCADE`, perubahan NIK oleh admin otomatis merambat ke `Waktu_kunjung`, `Peminjaman`, dan `Pemesanan`.
 
 ---
 
@@ -142,7 +139,6 @@ Tabel ini menjawab persyaratan inti: **setiap** objek basis data benar-benar dip
 | `trg_validasi_email_pengunjung` | Trigger | Menjaga **Pengunjung** saat membuat data baru (email valid) |
 | `trg_validasi_email_pengunjung_update` | Trigger | Menjaga **Pengunjung** saat mengubah email data yang sudah ada |
 | `trg_validasi_update_nik` | Trigger | Menjaga **Pengunjung** (NIK tak bisa diubah, kecuali oleh admin) — pop-up trigger di UI bila ditolak |
-| `trg_log_perubahan_alamat` | Trigger | Mengisi log → tampil di **Pengunjung** (riwayat alamat) |
 | `vw_status_buku` | View | **Laporan** › Status Semua Buku |
 | `vw_buku_terpopuler` | View | **Laporan** › Buku Terpopuler |
 | `vw_peminjaman_harian` | View | **Laporan** › Peminjaman per Hari |
@@ -173,7 +169,7 @@ Demi sistem yang dapat dijalankan, beberapa keputusan diambil dan dinyatakan ter
 1. **Lapisan autentikasi ditambahkan.** ERD asli tidak memuat kredensial pada staf. Ditambahkan tabel `app_account` (username + hash bcrypt + peran + tautan opsional ke `NIK` staf) **tanpa** mengubah tabel inti. Tersedia empat peran: `admin`, `pustakawan`, `penjual`, dan `pengunjung`. Peran **`pengunjung` bersifat lihat-saja (read-only)** — dapat menelusuri katalog, menu, dasbor, dan laporan, tetapi seluruh operasi tulis ditolak di backend.
 2. **Data contoh berasal dari file SQL Anda.** Isi `05_seed_data.sql` diambil persis dari file sumber (±790 buku, ±870 kunjungan, ±860 baris pemesanan, dll.). File ini dimuat **sebelum** `06_triggers.sql` sehingga data historis (yang sudah konsisten) tidak ikut divalidasi trigger; trigger hanya menjaga operasi baru dari aplikasi.
 3. **Deklarasi determinisme fungsi diperbaiki.** Sumber awal menandai sebagian fungsi `DETERMINISTIC`. Karena membaca tabel, ini salah secara semantik dan dapat ditolak saat `log_bin_trust_function_creators=OFF`. Semua fungsi diperbaiki menjadi `NOT DETERMINISTIC READS SQL DATA`.
-4. **Resolusi ganda untuk trigger ke-10.** Pada sumber, trigger ke-10 berjudul "Log Perubahan Alamat" namun berisi kode validasi NIK. Keduanya dipertahankan: `trg_validasi_update_nik` (mengunci NIK) **dan** `trg_log_perubahan_alamat` (mengisi `Log_Perubahan_Alamat`). Aplikasi memakai keduanya.
+4. **Trigger ke-10 pada sumber berjudul "Log Perubahan Alamat" namun berisi kode validasi NIK.** Awalnya kedua perilaku dipertahankan sebagai dua trigger terpisah: `trg_validasi_update_nik` (mengunci NIK) dan `trg_log_perubahan_alamat` (mencatat histori alamat ke tabel `Log_Perubahan_Alamat`). Trigger pencatatan histori alamat beserta tabel pendukungnya kemudian **dihapus** atas permintaan proyek — fitur "Riwayat Perubahan Alamat" di profil Pengunjung tidak lagi ada. Yang dipertahankan hanya `trg_validasi_update_nik` (penguncian NIK), sesuai judul aslinya pada sumber.
 5. **Isi prosedur ditulis lengkap.** Sumber hanya mendeskripsikan perilaku prosedur; implementasinya (termasuk penanganan JSON, snapshot harga, dan `ROLLBACK`) ditulis sesuai deskripsi tersebut.
 6. **Backend tidak pernah melewati logika DB.** Pemesanan, pengembalian, denda, rekomendasi, total, dan rekap semuanya memanggil function/procedure/view — bukan menghitung ulang di lapisan aplikasi. Trigger menangani pembaruan status otomatis.
 7. **Relasi `Penjual`–`Makanan` (1‑ke‑banyak).** `Makanan.Penjual_NIK_pj` (FK → `Penjual.NIK_pj`, `ON UPDATE CASCADE ON DELETE RESTRICT`) menandai menu tersebut **dimiliki** oleh satu penjual; satu penjual bisa punya banyak menu. Ini terpisah dari `Pemesanan.Penjual_NIK_pj`, yang menandai penjual mana yang **memproses** transaksi kasir — seorang kasir boleh menjual menu milik penjual lain. Karena `Nama_mk` tidak diberi constraint UNIQUE, dua penjual berbeda boleh punya menu dengan nama yang sama; masing-masing tetap baris (`ID_mk`) tersendiri di tabel `Makanan`.
