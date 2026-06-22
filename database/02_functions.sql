@@ -87,8 +87,9 @@ BEGIN
   RETURN IFNULL(v_total, 0);
 END //
 
--- 7. Most-borrowed title within a genre (reading suggestion engine).
-CREATE FUNCTION sf_rekomendasi_buku(p_jenis VARCHAR(50))
+-- 7. Most-borrowed title within a genre (reading suggestion engine),
+--    excluding the book's own title (a title may exist as several copies).
+CREATE FUNCTION sf_rekomendasi_buku(p_jenis VARCHAR(50), p_judul_exclude VARCHAR(200))
 RETURNS VARCHAR(200) NOT DETERMINISTIC READS SQL DATA
 BEGIN
   DECLARE v_judul VARCHAR(200);
@@ -96,6 +97,7 @@ BEGIN
   FROM Buku b
   JOIN Detail_Peminjaman dp ON b.ID_b = dp.Buku_ID_b
   WHERE b.Jenis_b = p_jenis
+    AND b.Judul_b <> p_judul_exclude
   GROUP BY b.ID_b, b.Judul_b
   ORDER BY COUNT(*) DESC
   LIMIT 1;

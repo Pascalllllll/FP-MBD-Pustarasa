@@ -10,7 +10,7 @@ async function get(id) {
   if (!row) throw ApiError.notFound('Buku tidak ditemukan');
   const [ketersediaan, rekomendasi] = await Promise.all([
     repo.checkAvailability(id),
-    repo.recommendByGenre(row.Jenis_b),
+    repo.recommendByGenre(row.Jenis_b, row.Judul_b),
   ]);
   return { ...row, ketersediaan, rekomendasi };
 }

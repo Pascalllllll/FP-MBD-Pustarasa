@@ -56,7 +56,7 @@ Semua dideklarasikan `NOT DETERMINISTIC READS SQL DATA` karena membaca tabel.
 | `sf_hitung_total_pemesanan(id_ps)` | DECIMAL | Total satu pesanan = Σ(kuantitas × harga satuan) |
 | `sf_cek_status_keanggotaan(nik)` | VARCHAR | "Aktif"/"Tidak Aktif" berdasarkan keberadaan aktivitas |
 | `sf_total_denda_pengunjung(nik)` | DECIMAL | Akumulasi denda seluruh peminjaman pengunjung |
-| `sf_rekomendasi_buku(jenis)` | VARCHAR | Daftar judul lain pada genre sama (string gabungan) |
+| `sf_rekomendasi_buku(jenis, judul_exclude)` | VARCHAR | Judul paling sering dipinjam pada genre sama, mengecualikan `judul_exclude` (buku itu sendiri) |
 | `sf_durasi_kunjungan_rata_rata(nik)` | DECIMAL | Rata-rata durasi kunjungan (menit) |
 
 ---

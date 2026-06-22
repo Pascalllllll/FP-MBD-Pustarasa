@@ -33,11 +33,11 @@ async function checkAvailability(id) {
 }
 
 /**
- * Recommend other titles of the same genre using sf_rekomendasi_buku,
- * which returns a comma-joined string of titles.
+ * Recommend the most-borrowed title in the same genre via sf_rekomendasi_buku,
+ * excluding the book's own title (judul) so it never recommends itself.
  */
-async function recommendByGenre(jenis) {
-  const rows = await query(`SELECT sf_rekomendasi_buku(?) AS rekomendasi`, [jenis]);
+async function recommendByGenre(jenis, judul) {
+  const rows = await query(`SELECT sf_rekomendasi_buku(?, ?) AS rekomendasi`, [jenis, judul]);
   return rows[0] ? rows[0].rekomendasi : null;
 }
 
