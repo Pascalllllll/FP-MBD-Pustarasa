@@ -71,8 +71,11 @@ export default function Login() {
               <span className="text-white/90">menikmati rasa.</span>
             </h1>
             <p className="mt-4 max-w-md text-white/70">
-              Sistem terpadu pengelolaan perpustakaan dan kantin PustaRasa —
-              sirkulasi buku, kunjungan, menu, dan transaksi kasir dalam satu dasbor.
+              Sistem basis data PustaRasa dirancang untuk mengelola dua layanan utama, 
+              yaitu layanan perpustakaan dan layanan kantin. Sistem ini mencatat data 
+              pengunjung sebagai pengguna layanan, data buku sebagai koleksi perpustakaan, 
+              data makanan sebagai produk kantin, serta data petugas yang terdiri dari 
+              pustakawan dan penjual.
             </p>
           </div>
           <div className="flex gap-6 text-sm text-white/60">
