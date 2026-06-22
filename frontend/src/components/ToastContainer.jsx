@@ -12,7 +12,7 @@ const STYLES = {
 const TITLE = {
   trigger: 'Ditolak oleh trigger basis data',
   error: 'Terjadi kesalahan',
-  success: 'Berhasil',
+  success: 'Sukses',
   info: 'Info',
 };
 

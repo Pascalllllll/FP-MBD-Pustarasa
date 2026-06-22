@@ -51,6 +51,14 @@ async function request(path, { method = 'GET', body, params } = {}) {
     if (res.status === 401) setToken(null);
     throw err;
   }
+
+  // Mirror toast.trigger: a write request that *isn't* rejected gets a green confirmation.
+  // /trigger/* is excluded — it always returns 200 even when the simulated trigger rejects,
+  // since that page shows its own ✓/✕ result inline.
+  if (method !== 'GET' && !path.startsWith('/auth/') && !path.startsWith('/trigger/')) {
+    toast.success('Operasi berhasil disimpan.');
+  }
+
   return payload ? payload.data : null;
 }
 
