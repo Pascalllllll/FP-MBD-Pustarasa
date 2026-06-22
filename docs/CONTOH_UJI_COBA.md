@@ -47,8 +47,9 @@ Semua trigger di bawah **otomatis di-ROLLBACK** apa pun hasilnya — aman dicoba
 
 | # | Trigger | Skenario | Parameter Input | Ekspektasi Output |
 |---|---|---|---|---|
-| 1 | `trg_update_buku_dipinjam` | otomatis (tanpa pop-up) | `idPm`=`PM0040`, `idB`=`B00002`, `dendaPerHari`=`2000` | ✓ Diterima |
-| 2 | `trg_update_buku_dikembalikan` | otomatis (tanpa pop-up) | `idDpm`=`DP0001` (belum kembali) | ✓ Diterima |
+| 1 | `trg_update_buku_dipinjam`*** | satu-satunya skenario | `idPm`=`PM0040`, `idB`=`B00002`, `dendaPerHari`=`2000` | ✓ Diterima — `Buku.Keterangan_b` jadi "Dipinjam" |
+| 2 | `trg_update_buku_dikembalikan` | belum pernah kembali → efek terpicu | `idDpm`=`DP0001` (belum kembali) | ✓ Diterima — `Buku.Keterangan_b` jadi "Tidak Dipinjam" |
+| | | sudah pernah kembali → efek tidak terpicu**** | `idDpm`=`DP0165` (sudah kembali `2026-06-01`) | ✓ Diterima — tapi `Buku.Keterangan_b` **tidak berubah** |
 | 3 | `trg_validasi_makanan_habis` | menu masih Ada | `idPs`=`PS0003`, `idMk`=`MK0001`, `qty`=`1`, `harga`=`25000` | ✓ Diterima |
 | | | menu Habis* | sama, tapi `idMk` menu yang statusnya "Habis" | ✕ `Makanan/Minuman ini sedang habis dan tidak dapat dipesan!` |
 | 4 | `trg_validasi_kuantitas_pesanan` | qty valid | `idPs`=`PS0003`, `idMk`=`MK0001`, `qty`=`2`, `harga`=`25000` | ✓ Diterima |
@@ -75,3 +76,7 @@ Semua trigger di bawah **otomatis di-ROLLBACK** apa pun hasilnya — aman dicoba
 \* Belum ada menu berstatus "Habis" di data dummy bawaan — ubah salah satu dulu lewat **Menu Makanan**, jalankan ujinya, lalu kembalikan ke "Ada".
 
 \*\* Versi `INSERT` murni ini **tidak bisa dipicu lewat alur normal di web** (check-in selalu menyisipkan `Waktu_Keluar_wk = NULL`) — Uji Trigger adalah satu-satunya cara mengujinya tanpa `mysql` CLI.
+
+\*\*\* Trigger ini tidak punya `SIGNAL` sama sekali (selalu jalan tanpa syarat) — tidak ada versi "ditolak" yang mungkin diuji.
+
+\*\*\*\* Trigger ini juga tidak punya `SIGNAL` — bedanya, badannya punya kondisi `IF`. Saat kondisinya tidak terpenuhi (buku itu sudah pernah dikembalikan sebelumnya), `UPDATE`-nya tetap diterima MySQL (tidak ada error/pop-up), cuma efek samping (ubah status buku) yang tidak ikut jalan.
