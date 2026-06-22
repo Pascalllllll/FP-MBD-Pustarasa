@@ -70,7 +70,7 @@ export default function Triggers() {
                 </div>
 
                 <button className="btn-primary mt-3 w-full" onClick={() => run(trg)} disabled={res?.busy}>
-                  {res?.busy ? 'Menjalankan…' : 'Jalankan (auto-rollback)'}
+                  {res?.busy ? 'Menjalankan…' : 'Jalankan'}
                 </button>
 
                 {res && !res.busy && res.error && (
