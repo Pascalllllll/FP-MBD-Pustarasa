@@ -17,7 +17,7 @@ Di bawahnya ada strip **Kunjungan** dan kartu **Rekap Harian** (dihitung oleh pr
 
 ### Pengunjung
 - Klik **Tambah** untuk mendaftarkan pengunjung (butuh NIK 16 digit; email divalidasi oleh basis data).
-- Klik **nama** pengunjung untuk membuka profil: total belanja, total denda, rata-rata durasi kunjungan, status keanggotaan, dan **riwayat perubahan alamat**. Semua angka dihitung langsung oleh fungsi basis data.
+- Klik **nama** pengunjung untuk membuka profil: total belanja, total denda, rata-rata durasi kunjungan, dan status keanggotaan. Semua angka dihitung langsung oleh fungsi basis data.
 - Saat mengubah data, **NIK tidak bisa diganti** (dikunci basis data). Jika alamat diubah, perubahannya tercatat otomatis.
 
 ### Buku Tamu (Kunjungan)
@@ -28,6 +28,9 @@ Di bawahnya ada strip **Kunjungan** dan kartu **Rekap Harian** (dihitung oleh pr
 ### Laporan
 - Pilih salah satu dari 20 laporan di panel kiri (terkelompok per layanan). Tabel akan menyesuaikan kolomnya secara dinamis.
 - Kartu **Rekap Harian** di atas menerima pilihan tanggal untuk meninjau hari mana pun.
+
+### Uji Function
+Panggil langsung kedelapan stored function basis data dengan parameter Anda sendiri. Tiap function tampil sebagai kartu — isi kolom parameternya (mis. NIK atau ID Buku), tekan **Jalankan**, dan hasilnya muncul apa adanya dari MySQL. Berguna untuk memverifikasi function tanpa harus membuka `mysql` CLI.
 
 ### Metode Pembayaran
 Daftar opsi pembayaran kantin. (Menambah/menghapus hanya untuk Administrator.)
@@ -79,7 +82,7 @@ Kelola data penjual kantin.
 
 Login `pengunjung` / `lihat123` membuka **mode lihat-saja**. Peran ini ditujukan bagi pengunjung yang ingin menelusuri tanpa mengubah data:
 
-- Yang **terlihat**: Dasbor, Katalog Buku (termasuk detail & rekomendasi), Menu Makanan, dan Laporan.
+- Yang **terlihat**: Dasbor, Katalog Buku (termasuk detail & rekomendasi), Menu Makanan, Laporan, dan Uji Function.
 - Yang **disembunyikan**: peminjaman, pengembalian, kasir, buku tamu, dan seluruh menu manajemen.
 - **Tidak ada** tombol tambah/ubah/hapus di mana pun, dan setiap percobaan operasi tulis akan ditolak oleh backend. Akses benar-benar terbatas pada melihat.
 

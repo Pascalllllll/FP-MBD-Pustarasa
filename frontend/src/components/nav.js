@@ -1,6 +1,6 @@
 import {
   IconDashboard, IconBook, IconBorrow, IconReturn, IconVisitor, IconClock,
-  IconFood, IconCart, IconLibrarian, IconSeller, IconCard, IconReport,
+  IconFood, IconCart, IconLibrarian, IconSeller, IconCard, IconReport, IconBolt,
 } from './icons.jsx';
 
 // roles: which roles may see/visit. Empty/undefined = all authenticated
@@ -48,6 +48,8 @@ export const NAV_GROUPS = [
       { to: '/metode-pembayaran', label: 'Metode Bayar', icon: IconCard, roles: STAFF },
       // Reports visible to pengunjung (read-only analytics)
       { to: '/laporan', label: 'Laporan', icon: IconReport },
+      // Read-only function tester, visible to pengunjung too
+      { to: '/function', label: 'Uji Function', icon: IconBolt },
     ],
   },
 ];

@@ -18,6 +18,7 @@ import Librarians from './pages/Librarians.jsx';
 import Sellers from './pages/Sellers.jsx';
 import Payments from './pages/Payments.jsx';
 import Reports from './pages/Reports.jsx';
+import Functions from './pages/Functions.jsx';
 
 export default function App() {
   return (
@@ -103,6 +104,7 @@ export default function App() {
             }
           />
           <Route path="laporan" element={<Reports />} />
+          <Route path="function" element={<Functions />} />
         </Route>
 
         <Route path="*" element={<Dashboard />} />

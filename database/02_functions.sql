@@ -89,6 +89,13 @@ END //
 
 -- 7. Most-borrowed title within a genre (reading suggestion engine),
 --    excluding the book's own title (a title may exist as several copies).
+--    p_judul_exclude is optional: NULL/'' means "no exclusion" — a plain
+--    `<> p_judul_exclude` would silently match zero rows here, because SQL
+--    comparisons against NULL are NULL (neither true nor false), not TRUE.
+--    GROUP BY is by title only (not ID_b): a title can have several physical
+--    copies, and each copy's borrows must add up to that title's true total
+--    instead of being split into several smaller per-copy counts. The
+--    secondary ORDER BY key keeps the pick stable when two titles tie.
 CREATE FUNCTION sf_rekomendasi_buku(p_jenis VARCHAR(50), p_judul_exclude VARCHAR(200))
 RETURNS VARCHAR(200) NOT DETERMINISTIC READS SQL DATA
 BEGIN
@@ -97,9 +104,9 @@ BEGIN
   FROM Buku b
   JOIN Detail_Peminjaman dp ON b.ID_b = dp.Buku_ID_b
   WHERE b.Jenis_b = p_jenis
-    AND b.Judul_b <> p_judul_exclude
-  GROUP BY b.ID_b, b.Judul_b
-  ORDER BY COUNT(*) DESC
+    AND (p_judul_exclude IS NULL OR p_judul_exclude = '' OR b.Judul_b <> p_judul_exclude)
+  GROUP BY b.Judul_b
+  ORDER BY COUNT(*) DESC, b.Judul_b ASC
   LIMIT 1;
   RETURN IFNULL(v_judul, 'Belum ada rekomendasi');
 END //

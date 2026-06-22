@@ -105,6 +105,8 @@ Setiap objek basis data benar-benar dipanggil oleh backend (lihat `backend/src/r
 | `sf_cek_status_keanggotaan` | `visitor.repository.js` | **Pengunjung** → badge status (Aktif/Tidak Aktif) |
 | `sf_durasi_kunjungan_rata_rata` | `visitor.repository.js` | **Pengunjung** → drawer profil |
 
+Kedelapan function di atas **juga** bisa dipanggil langsung dengan parameter bebas lewat halaman **Uji Function** (`function.repository.js`, endpoint `GET /api/function/:name`) — lihat bagian "Melihat & Menguji Function" di bawah.
+
 ### Procedure (3)
 
 | Procedure | Dipanggil dari | Dipakai di fitur |
@@ -269,6 +271,10 @@ SHOW FULL TABLES IN pustarasa WHERE Table_type = 'VIEW';  -- 20 view
 ```
 
 ### Melihat & Menguji Function
+
+Lewat web (tanpa CLI): buka halaman **Uji Function** di sidebar (terlihat untuk semua peran, termasuk `pengunjung`). Setiap function tampil sebagai kartu dengan input untuk setiap parameternya — isi nilainya, tekan **Jalankan**, hasilnya dipanggil langsung lewat `SELECT sf_xxx(...)` ke MySQL (endpoint `GET /api/function/:name`, lihat `backend/src/repositories/function.repository.js`).
+
+Lewat `mysql` CLI:
 
 ```sql
 -- Daftar singkat kedelapan function (nama, tipe, dll.)

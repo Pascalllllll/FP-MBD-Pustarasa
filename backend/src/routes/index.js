@@ -14,6 +14,7 @@ const visitRoutes = require('./visit.routes');
 const borrowingRoutes = require('./borrowing.routes');
 const orderRoutes = require('./order.routes');
 const reportRoutes = require('./report.routes');
+const functionRoutes = require('./function.routes');
 
 router.use('/auth', authRoutes);
 
@@ -30,5 +31,6 @@ router.use('/kunjungan', visitRoutes);
 router.use('/peminjaman', borrowingRoutes);
 router.use('/pemesanan', orderRoutes);
 router.use('/laporan', reportRoutes);
+router.use('/function', functionRoutes);
 
 module.exports = router;
