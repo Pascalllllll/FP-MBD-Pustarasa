@@ -2,12 +2,7 @@
 
 const { pool } = require('../config/db');
 
-/**
- * Registry of every TRIGGER in the schema. Each entry builds the real
- * INSERT/UPDATE statement that would fire it. call() always wraps the
- * statement in a transaction that gets ROLLED BACK regardless of outcome,
- * so testing a trigger never leaves permanent data behind.
- */
+/** Each entry builds the real INSERT/UPDATE that fires it; call() always rolls back. */
 const TRIGGER_REGISTRY = {
   trg_update_buku_dipinjam: {
     label: 'Update Buku Dipinjam (otomatis)',

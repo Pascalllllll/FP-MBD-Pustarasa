@@ -81,10 +81,12 @@ Kelola data penjual kantin.
 ## Khusus Administrator
 
 ### Uji Procedure
-Panggil langsung ketiga stored procedure (`sp_checkout_pesanan`, `sp_pengembalian_buku`, `sp_rekap_harian`) dengan parameter sendiri. **Operasi ini berjalan sungguhan** — sama seperti dipanggil dari Kasir & Pesanan atau Pengembalian, jadi hasilnya benar-benar tersimpan.
+Panggil langsung tiga procedure dengan parameter sendiri: **Checkout Pesanan** dan **Pengembalian Buku** (versi sederhana dari rekan satu tim — `sp_checkout_pesanan_sederhana`/`sp_pengembalian_buku_sederhana`, objek terpisah dari yang dipakai Kasir & Pesanan/Pengembalian) dan **Rekap Harian** (`sp_rekap_harian`, persis yang dipakai Dasbor/Laporan). **Operasi ini berjalan sungguhan** — hasilnya benar-benar tersimpan, tidak di-rollback.
 
 ### Uji Trigger
 Picu langsung salah satu dari 13 trigger dengan `INSERT`/`UPDATE` sungguhan ke tabel terkait, lalu sistem selalu **membatalkan (ROLLBACK)** operasinya — apa pun hasilnya, tidak ada data yang berubah permanen. Berguna untuk memverifikasi aturan trigger (termasuk yang versi `INSERT`-nya tidak bisa dipicu lewat alur normal di web) tanpa membuka `mysql` CLI.
+
+Contoh input siap pakai untuk ketiga halaman ini (Uji Function, Uji Procedure, Uji Trigger) ada di [`docs/CONTOH_UJI_COBA.md`](CONTOH_UJI_COBA.md).
 
 ---
 

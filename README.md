@@ -74,7 +74,7 @@ Kedelapannya juga bisa dipanggil bebas dengan parameter sendiri lewat halaman **
 | `sp_pengembalian_buku` | Pengembalian → "Konfirmasi Pengembalian" |
 | `sp_rekap_harian` | Dasbor & Laporan → kartu Rekap Harian |
 
-Ketiganya juga bisa dipanggil langsung lewat halaman **Uji Procedure** (khusus `admin`) — operasi berjalan sungguhan, sama seperti dipanggil dari fitur aslinya.
+Halaman **Uji Procedure** (admin) memanggil `sp_rekap_harian` persis seperti di atas; untuk checkout/pengembalian ia memanggil `sp_checkout_pesanan_sederhana`/`sp_pengembalian_buku_sederhana` (versi rekan satu tim, objek terpisah) — tidak memengaruhi yang dipakai Kasir & Pesanan/Pengembalian sungguhan.
 
 ### Trigger (13)
 
@@ -158,3 +158,4 @@ SELECT sf_cek_status_pengunjung('1234567890123456');
 | [`docs/SETUP.md`](docs/SETUP.md) | Instalasi manual langkah-demi-langkah, variabel `.env`, build produksi, pemecahan masalah |
 | [`docs/DATABASE.md`](docs/DATABASE.md) | Skema tabel & relasi, signature lengkap tiap function/procedure/trigger/view, asumsi & penyesuaian dari sumber asli |
 | [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md) | Panduan pemakaian aplikasi per peran |
+| [`docs/CONTOH_UJI_COBA.md`](docs/CONTOH_UJI_COBA.md) | Contoh input + ekspektasi output terverifikasi untuk Uji Function, Uji Procedure, dan Uji Trigger |

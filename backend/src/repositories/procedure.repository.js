@@ -3,21 +3,22 @@
 const { pool } = require('../config/db');
 
 /**
- * Registry of every stored PROCEDURE in the schema. `outs: null` means the
- * procedure returns a result set (a plain SELECT inside it) instead of OUT params.
+ * outs: null = reads a result set; [] = confirms it ran; [...] = OUT params.
+ * Checkout/Pengembalian here call the *_sederhana objects (a teammate's
+ * version); the real app still calls the original ones, untouched.
  */
 const PROCEDURE_REGISTRY = {
-  sp_checkout_pesanan: {
+  sp_checkout_pesanan_sederhana: {
     label: 'Checkout Pesanan',
     params: [
+      { name: 'idPs', label: 'ID Pemesanan baru (format PS####, belum dipakai)', placeholder: 'PS9001' },
       { name: 'nik', label: 'NIK Pengunjung', placeholder: '1234567890123456' },
-      { name: 'nikPj', label: 'NIK Penjual', placeholder: '4567890123456789' },
-      { name: 'idMp', label: 'ID Metode Pembayaran', placeholder: 'MP0001' },
-      { name: 'items', label: 'Items (JSON)', type: 'textarea', placeholder: '[{"id_mk":"MK0001","qty":2}]' },
+      { name: 'penjual', label: 'NIK Penjual', placeholder: '4567890123456789' },
+      { name: 'metode', label: 'ID Metode Pembayaran', placeholder: 'MP0001' },
     ],
-    outs: ['id_ps', 'total'],
+    outs: [],
   },
-  sp_pengembalian_buku: {
+  sp_pengembalian_buku_sederhana: {
     label: 'Pengembalian Buku',
     params: [
       { name: 'idDpm', label: 'ID Detail Peminjaman', placeholder: 'DP0001' },
@@ -40,7 +41,7 @@ function list() {
   }));
 }
 
-/** These run for real (same procedures the live Kasir/Pengembalian features call) — no rollback. */
+/** Runs for real — no rollback. */
 async function call(name, values) {
   const meta = PROCEDURE_REGISTRY[name];
   if (!meta) return undefined;
@@ -49,10 +50,14 @@ async function call(name, values) {
 
   const conn = await pool.getConnection();
   try {
-    if (!meta.outs) {
+    if (meta.outs === null) {
       const [resultSets] = await conn.query(`CALL ${name}(${inPlaceholders})`, inArgs);
       const rows = Array.isArray(resultSets[0]) ? resultSets[0] : resultSets;
       return rows[0] || null;
+    }
+    if (meta.outs.length === 0) {
+      await conn.query(`CALL ${name}(${inPlaceholders})`, inArgs);
+      return { executed: true };
     }
     const outVars = meta.outs.map((o) => `@${o}`);
     await conn.query(`CALL ${name}(${inPlaceholders}, ${outVars.join(', ')})`, inArgs);

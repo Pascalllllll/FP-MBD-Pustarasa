@@ -7,6 +7,8 @@ USE pustarasa;
 DROP PROCEDURE IF EXISTS sp_checkout_pesanan;
 DROP PROCEDURE IF EXISTS sp_pengembalian_buku;
 DROP PROCEDURE IF EXISTS sp_rekap_harian;
+DROP PROCEDURE IF EXISTS sp_checkout_pesanan_sederhana;
+DROP PROCEDURE IF EXISTS sp_pengembalian_buku_sederhana;
 
 DELIMITER //
 
@@ -119,6 +121,66 @@ BEGIN
        FROM Pemesanan ps
        JOIN Detail_Pemesanan dp ON ps.ID_ps = dp.Pemesanan_ID_ps
       WHERE DATE(ps.Waktu_Pesan_ps) = p_tanggal)                    AS Total_Penjualan;
+END //
+
+-- Versi sederhana dari rekan satu tim — nama berbeda, khusus demo/laporan.
+-- Kasir & Pesanan / Pengembalian di web tetap memanggil versi di atas.
+
+-- 4. CHECKOUT PESANAN (sederhana) — insert header Pemesanan saja, tanpa
+--    item/JSON/OUT; p_id_ps harus sudah unik (tidak digenerate).
+CREATE PROCEDURE sp_checkout_pesanan_sederhana(
+    IN p_id_ps CHAR(6),
+    IN p_nik CHAR(16),
+    IN p_penjual CHAR(16),
+    IN p_metode CHAR(6)
+)
+BEGIN
+    INSERT INTO Pemesanan (
+        ID_ps,
+        Pengunjung_NIK_k,
+        Penjual_NIK_pj,
+        Metode_pembayaran_ID_mp,
+        Waktu_Pesan_ps
+    )
+    VALUES (
+        p_id_ps,
+        p_nik,
+        p_penjual,
+        p_metode,
+        NOW()
+    );
+END //
+
+-- 5. PENGEMBALIAN BUKU (sederhana) — versi asli rekan, dipertahankan apa
+--    adanya (ROW_COUNT() setelah SELECT...INTO terbukti benar di MariaDB ini).
+CREATE PROCEDURE sp_pengembalian_buku_sederhana(
+    IN p_id_dpm CHAR(6),
+    IN p_tanggal DATE,
+    OUT p_denda DECIMAL(12,2)
+)
+BEGIN
+    DECLARE v_status DATE;
+
+    SELECT Waktu_Kembali_dpm
+    INTO v_status
+    FROM Detail_Peminjaman
+    WHERE ID_dpm = p_id_dpm;
+
+    IF v_status IS NULL AND ROW_COUNT() = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Data peminjaman tidak ditemukan!';
+    END IF;
+
+    IF v_status IS NOT NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Buku sudah dikembalikan!';
+    END IF;
+
+    UPDATE Detail_Peminjaman
+    SET Waktu_Kembali_dpm = IFNULL(p_tanggal, CURDATE())
+    WHERE ID_dpm = p_id_dpm;
+
+    SET p_denda = sf_hitung_denda_peminjaman(p_id_dpm);
 END //
 
 DELIMITER ;
