@@ -19,6 +19,8 @@ import Sellers from './pages/Sellers.jsx';
 import Payments from './pages/Payments.jsx';
 import Reports from './pages/Reports.jsx';
 import Functions from './pages/Functions.jsx';
+import Procedures from './pages/Procedures.jsx';
+import Triggers from './pages/Triggers.jsx';
 
 export default function App() {
   return (
@@ -105,6 +107,22 @@ export default function App() {
           />
           <Route path="laporan" element={<Reports />} />
           <Route path="function" element={<Functions />} />
+          <Route
+            path="procedure"
+            element={
+              <ProtectedRoute roles={['admin']}>
+                <Procedures />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="trigger"
+            element={
+              <ProtectedRoute roles={['admin']}>
+                <Triggers />
+              </ProtectedRoute>
+            }
+          />
         </Route>
 
         <Route path="*" element={<Dashboard />} />

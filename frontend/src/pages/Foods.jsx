@@ -25,7 +25,7 @@ export default function Foods() {
     <ResourcePage
       title="Menu Makanan"
       singular="Makanan"
-      description="Kelola daftar menu kantin. Setiap menu dimiliki oleh satu penjual. Status 'Habis' otomatis memblokir pemesanan lewat trigger basis data."
+      description="Kelola daftar menu kantin. Setiap menu dimiliki oleh satu penjual. Status 'Habis' otomatis memblokir pemesanan lewat trigger."
       service="kantin"
       endpoint="/makanan"
       idField="ID_mk"

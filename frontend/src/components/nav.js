@@ -49,6 +49,9 @@ export const NAV_GROUPS = [
       { to: '/laporan', label: 'Laporan', icon: IconReport },
       // Read-only function tester, visible to pengunjung too
       { to: '/function', label: 'Uji Function', icon: IconBolt },
+      // Procedure/trigger testers write to real tables (trigger auto-rolls back) — admin only
+      { to: '/procedure', label: 'Uji Procedure', icon: IconBolt, roles: ['admin'] },
+      { to: '/trigger', label: 'Uji Trigger', icon: IconBolt, roles: ['admin'] },
     ],
   },
 ];

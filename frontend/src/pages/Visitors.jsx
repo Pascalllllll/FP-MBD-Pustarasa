@@ -131,7 +131,7 @@ export default function Visitors() {
       <PageHeader
         title="Pengunjung"
         service="kunjungan"
-        description="Data anggota/pengunjung. Klik nama untuk melihat ringkasan aktivitas yang dihitung langsung dari fungsi basis data."
+        description="Data anggota/pengunjung. Klik nama untuk melihat ringkasan aktivitas."
         actions={
           canWrite && (
             <button className="btn-primary" onClick={openCreate}>

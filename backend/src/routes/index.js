@@ -15,6 +15,8 @@ const borrowingRoutes = require('./borrowing.routes');
 const orderRoutes = require('./order.routes');
 const reportRoutes = require('./report.routes');
 const functionRoutes = require('./function.routes');
+const procedureRoutes = require('./procedure.routes');
+const triggerRoutes = require('./trigger.routes');
 
 router.use('/auth', authRoutes);
 
@@ -32,5 +34,7 @@ router.use('/peminjaman', borrowingRoutes);
 router.use('/pemesanan', orderRoutes);
 router.use('/laporan', reportRoutes);
 router.use('/function', functionRoutes);
+router.use('/procedure', procedureRoutes);
+router.use('/trigger', triggerRoutes);
 
 module.exports = router;

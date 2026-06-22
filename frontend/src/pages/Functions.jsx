@@ -36,7 +36,7 @@ export default function Functions() {
       <PageHeader
         title="Uji Function"
         service="manajemen"
-        description="Panggil langsung kedelapan stored function basis data dengan parameter Anda sendiri — hasilnya benar-benar dihitung oleh MySQL saat itu juga, bukan oleh kode aplikasi."
+        description=""
       />
 
       {error && (

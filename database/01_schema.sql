@@ -199,3 +199,8 @@ CREATE TABLE app_account (
     PRIMARY KEY (id),
     UNIQUE KEY uq_account_username (username)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Index tambahan di luar PK/FK (kolom FK lain sudah otomatis terindeks InnoDB).
+-- Dipakai oleh query "buku belum kembali" dan "makanan di atas harga rata-rata".
+CREATE INDEX idx_dp_kembali ON Detail_Peminjaman (Waktu_Kembali_dpm);
+CREATE INDEX idx_makanan_harga ON Makanan (Harga_mk);

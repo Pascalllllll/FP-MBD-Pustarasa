@@ -19,7 +19,7 @@ export default function Orders() {
       <PageHeader
         title="Kasir & Pesanan"
         service="kantin"
-        description="Setiap penjual punya menunya sendiri — pilih penjual untuk membuka kasirnya, lalu buat pesanan. Checkout dijalankan oleh prosedur sp_checkout_pesanan dalam satu transaksi; menu habis otomatis ditolak oleh trigger."
+        description="Setiap penjual punya menunya sendiri. Pilih penjual untuk membuka kasirnya, lalu buat pesanan. Checkout dijalankan oleh prosedur sp_checkout_pesanan dalam satu transaksi; menu habis otomatis ditolak oleh trigger."
         actions={
           <div className="flex rounded-lg border border-line bg-surface p-0.5">
             {['kasir', 'riwayat'].map((t) => (
@@ -142,7 +142,7 @@ function PosScreen({ user }) {
   if (!nikPj) {
     return (
       <div>
-        <p className="mb-3 text-sm text-muted">Setiap penjual punya menunya sendiri — pilih penjual untuk membuka kasirnya.</p>
+        <p className="mb-3 text-sm text-muted">Setiap penjual punya menunya sendiri, pilih penjual.</p>
         {sellers.length === 0 ? (
           <Alert type="info">Belum ada data penjual.</Alert>
         ) : (

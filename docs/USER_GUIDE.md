@@ -78,6 +78,16 @@ Kelola data penjual kantin.
 
 ---
 
+## Khusus Administrator
+
+### Uji Procedure
+Panggil langsung ketiga stored procedure (`sp_checkout_pesanan`, `sp_pengembalian_buku`, `sp_rekap_harian`) dengan parameter sendiri. **Operasi ini berjalan sungguhan** — sama seperti dipanggil dari Kasir & Pesanan atau Pengembalian, jadi hasilnya benar-benar tersimpan.
+
+### Uji Trigger
+Picu langsung salah satu dari 13 trigger dengan `INSERT`/`UPDATE` sungguhan ke tabel terkait, lalu sistem selalu **membatalkan (ROLLBACK)** operasinya — apa pun hasilnya, tidak ada data yang berubah permanen. Berguna untuk memverifikasi aturan trigger (termasuk yang versi `INSERT`-nya tidak bisa dipicu lewat alur normal di web) tanpa membuka `mysql` CLI.
+
+---
+
 ## Mode Pengunjung (Lihat-saja)
 
 Login `pengunjung` / `lihat123` membuka **mode lihat-saja**. Peran ini ditujukan bagi pengunjung yang ingin menelusuri tanpa mengubah data:

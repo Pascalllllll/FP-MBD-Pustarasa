@@ -49,6 +49,8 @@ Mode **pengunjung** hanya bisa melihat — tidak ada tombol tambah/ubah/hapus, d
 
 Setiap function, procedure, trigger, dan view di bawah ini benar-benar dipanggil oleh backend (lihat `backend/src/repositories/*.js`) — tidak ada yang dibuat tapi tidak dipakai. Signature, parameter, dan rincian perilaku lengkap ada di [`docs/DATABASE.md`](docs/DATABASE.md).
 
+Selain PK/FK (yang otomatis terindeks InnoDB), ada 2 index tambahan: `idx_dp_kembali` (`Detail_Peminjaman.Waktu_Kembali_dpm`, dipakai query/​view "buku belum kembali") dan `idx_makanan_harga` (`Makanan.Harga_mk`, dipakai query "makanan di atas harga rata-rata").
+
 ### Function (8)
 
 | Function | Dipakai di |
@@ -62,7 +64,7 @@ Setiap function, procedure, trigger, dan view di bawah ini benar-benar dipanggil
 | `sf_cek_status_pengunjung` | Pengunjung → badge status |
 | `sf_durasi_kunjungan_rata_rata` | Pengunjung → drawer profil |
 
-Kedelapannya juga bisa dipanggil bebas dengan parameter sendiri lewat halaman **Uji Function** di sidebar.
+Kedelapannya juga bisa dipanggil bebas dengan parameter sendiri lewat halaman **Uji Function** di sidebar (semua peran, termasuk `pengunjung` — murni baca data).
 
 ### Procedure (3)
 
@@ -71,6 +73,8 @@ Kedelapannya juga bisa dipanggil bebas dengan parameter sendiri lewat halaman **
 | `sp_checkout_pesanan` | Kasir & Pesanan → "Proses Pesanan" (transaksional, snapshot harga per item) |
 | `sp_pengembalian_buku` | Pengembalian → "Konfirmasi Pengembalian" |
 | `sp_rekap_harian` | Dasbor & Laporan → kartu Rekap Harian |
+
+Ketiganya juga bisa dipanggil langsung lewat halaman **Uji Procedure** (khusus `admin`) — operasi berjalan sungguhan, sama seperti dipanggil dari fitur aslinya.
 
 ### Trigger (13)
 
@@ -118,13 +122,15 @@ Langkah-langkah berikut sengaja memilih input yang **akan ditolak**, supaya pop-
 
 Dua trigger lain bekerja diam-diam tanpa pop-up (tidak pernah menolak apa pun) — cek efeknya langsung: pinjam buku lewat **Peminjaman** lalu lihat status di **Katalog Buku** berubah jadi "Dipinjam" (`trg_update_buku_dipinjam`), dan konfirmasi **Pengembalian** untuk melihatnya kembali "Tidak Dipinjam" (`trg_update_buku_dikembalikan`).
 
-> Satu trigger (`trg_validasi_waktu_kunjung`, versi `INSERT` murni) tidak bisa dipicu lewat web karena jalur check-in selalu menyisipkan `Waktu_Keluar_wk = NULL` — yang aktif lewat web adalah pasangannya, `trg_validasi_waktu_kunjung_update`, di atas. Untuk menguji versi `INSERT`-nya, jalankan langsung lewat `mysql` CLI (lihat bagian berikut).
+> Satu trigger (`trg_validasi_waktu_kunjung`, versi `INSERT` murni) tidak bisa dipicu lewat web karena jalur check-in selalu menyisipkan `Waktu_Keluar_wk = NULL` — yang aktif lewat web adalah pasangannya, `trg_validasi_waktu_kunjung_update`, di atas. Untuk menguji versi `INSERT`-nya, gunakan halaman **Uji Trigger** di bawah, atau jalankan langsung lewat `mysql` CLI.
+
+Halaman **Uji Trigger** (khusus `admin`) menjalankan ke-13 trigger di atas secara nyata — `INSERT`/`UPDATE` sungguhan ke tabel terkait — lalu selalu **ROLLBACK** apa pun hasilnya, jadi tidak ada data yang berubah permanen meski trigger menerima operasinya.
 
 ---
 
 ## Eksplorasi Database (Opsional)
 
-**Lewat web:** buka halaman **Uji Function** di sidebar (terlihat untuk semua peran, termasuk `pengunjung`). Tiap function tampil sebagai kartu dengan input parameter dan tombol **Jalankan**, dipanggil langsung lewat `SELECT sf_xxx(...)` ke MySQL (endpoint `GET /api/function/:name`).
+**Lewat web:** tiga halaman di sidebar, urut sesuai kompleksitasnya — **Uji Function** (semua peran, baca-saja), **Uji Procedure** (admin, operasi sungguhan), **Uji Trigger** (admin, `INSERT`/`UPDATE` sungguhan + auto-rollback). Tiap objek tampil sebagai kartu dengan input parameter dan tombol **Jalankan**.
 
 **Lewat `mysql` CLI:**
 
