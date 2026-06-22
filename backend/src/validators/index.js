@@ -20,10 +20,7 @@ const login = [
   requiredStr('password', 'Kata sandi'),
 ];
 
-// Email_k is NOT NULL in the schema and trg_validasi_email_pengunjung is
-// the one that actually judges its format (must contain '@' and '.') — we
-// only check it's non-empty here, not that it's a well-formed email, so
-// the trigger (not .isEmail()) is what rejects a malformed address.
+// Only checks non-empty — trg_validasi_email_pengunjung rejects a malformed address.
 const visitorCreate = [
   nik('NIK_k', 'NIK'),
   requiredStr('Nama_k', 'Nama'),
@@ -74,10 +71,7 @@ const paymentCreate = [
   requiredStr('Jenis_mp', 'Jenis'),
 ];
 
-// waktuMasuk/waktuKeluar are optional — when omitted the server uses "now".
-// When given (e.g. backdating a forgotten check-out), only the shape is
-// checked here; trg_validasi_waktu_kunjung is what rejects an exit time
-// earlier than the entry time.
+// Optional (server defaults to "now"); trg_validasi_waktu_kunjung rejects exit < entry.
 const checkIn = [
   nik('nik', 'NIK pengunjung'),
   body('waktuMasuk').optional({ nullable: true, checkFalsy: true })
@@ -103,9 +97,7 @@ const orderCheckout = [
   requiredStr('idMp', 'Metode pembayaran'),
   body('items').isArray({ min: 1 }).withMessage('Keranjang tidak boleh kosong'),
   body('items.*.id_mk').trim().notEmpty().withMessage('ID makanan wajib'),
-  // No min here on purpose: trg_validasi_kuantitas_pesanan is the one that
-  // rejects qty <= 0, not the app. Only the basic shape (must be an integer)
-  // is checked here.
+  // No min on purpose — trg_validasi_kuantitas_pesanan rejects qty <= 0.
   body('items.*.qty').isInt().withMessage('Kuantitas harus berupa angka bulat'),
 ];
 

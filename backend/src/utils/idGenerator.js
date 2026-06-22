@@ -3,15 +3,8 @@
 const { pool } = require('../config/db');
 
 /**
- * Generates the next sequential business key for a table, mirroring the
- * format used by the seed data and stored procedures.
- *
- *   Most tables: <2-letter prefix><4 digits>   e.g. PM0007, WK0013
- *   Buku:        <1-letter prefix><5 digits>    e.g. B00011
- *
- * The numeric part is derived from MAX(SUBSTRING(col, prefixLen+1)).
- * Runs inside the caller's transaction when a connection is supplied,
- * so concurrent inserts stay consistent.
+ * Generates the next sequential key (e.g. PM0007, B00011) via MAX(SUBSTRING(...))+1.
+ * Runs in the caller's transaction when given a connection, so concurrent inserts stay consistent.
  */
 async function nextId(table, column, prefix, width, conn = pool) {
   const sql =

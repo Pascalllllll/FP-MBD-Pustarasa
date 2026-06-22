@@ -82,9 +82,7 @@ export default function Borrowings() {
     }
   };
 
-  // Books already 'Dipinjam' stay in the list (just labelled) instead of
-  // being hidden — trg_validasi_buku_sedang_dipinjam is what rejects picking
-  // one, not the picker silently filtering it out.
+  // Borrowed books stay listed (labelled) — the trigger rejects picking one, not the UI.
   const pickableBooks = books.filter((b) => !cart.some((c) => c.id_b === b.ID_b));
 
   const addToCart = () => {

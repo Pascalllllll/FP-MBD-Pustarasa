@@ -2,11 +2,7 @@
 
 require('dotenv').config();
 
-/**
- * Centralised, validated environment configuration.
- * Every other module imports from here instead of reading process.env
- * directly, so misconfiguration fails fast and in one place.
- */
+/** Centralised env config; other modules import from here so misconfiguration fails fast in one place. */
 const env = {
   nodeEnv: process.env.NODE_ENV || 'development',
   port: parseInt(process.env.PORT || '4000', 10),

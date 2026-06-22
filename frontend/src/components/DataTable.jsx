@@ -1,10 +1,6 @@
 import { IconSearch } from './icons.jsx';
 
-/**
- * Generic table.
- * columns: [{ key, header, render?(row), className? }]
- * actions: optional (row) => ReactNode rendered in a trailing cell.
- */
+/** Generic table. columns: [{ key, header, render?(row), className? }]; actions: (row) => ReactNode. */
 export default function DataTable({
   columns,
   rows,

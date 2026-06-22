@@ -48,15 +48,7 @@ async function findById(id) {
   return { ...header[0], items: lines };
 }
 
-/**
- * Create a borrowing header plus one Detail_Peminjaman row per book, in a
- * single transaction. The AFTER-INSERT trigger trg_update_buku_dipinjam
- * flips each book to 'Dipinjam'; trg_validasi_buku_sedang_dipinjam blocks
- * double-lending and trg_validasi_batas_kembali enforces the date rule.
- *
- * @param {object} data { nik, nikPt, waktuPinjam, batasKembali,
- *                        items: [{ id_b, denda_per_hari }] }
- */
+/** Creates a loan; triggers flip book status, block double-lending, and validate the date. */
 async function create(data) {
   const conn = await pool.getConnection();
   try {
@@ -90,11 +82,7 @@ async function create(data) {
   }
 }
 
-/**
- * Return a single borrowed book by calling sp_pengembalian_buku. The
- * procedure stamps Waktu_Kembali_dpm (firing trg_update_buku_dikembalikan
- * to free the book) and returns the fine from sf_hitung_denda_peminjaman.
- */
+/** Returns a book via sp_pengembalian_buku; the trigger frees it and the fine comes from sf_hitung_denda_peminjaman. */
 async function returnBook(idDpm, tanggal) {
   const conn = await pool.getConnection();
   try {
@@ -112,7 +100,26 @@ const outstanding = () => query(`SELECT * FROM vw_buku_belum_kembali`);
 const perVisitor = () => query(`SELECT * FROM vw_buku_per_pengunjung`);
 const withoutVisit = () => query(`SELECT * FROM vw_peminjaman_tanpa_kunjungan`);
 
+/** Already-returned lines (history), with the fine actually charged at return. */
+function returned(search) {
+  const andSearch = search ? `AND (b.Judul_b LIKE ? OR pg.Nama_k LIKE ?)` : ``;
+  const params = search ? [`%${search}%`, `%${search}%`] : [];
+  return query(
+    `SELECT p.ID_pm, dp.ID_dpm, pg.Nama_k AS Nama_Peminjam, b.Judul_b,
+            p.Waktu_Pinjam_pm, p.Batas_Kembali_pm, dp.Waktu_Kembali_dpm,
+            sf_hitung_denda_peminjaman(dp.ID_dpm) AS denda
+       FROM Detail_Peminjaman dp
+       JOIN Peminjaman p  ON dp.Peminjaman_ID_pm = p.ID_pm
+       JOIN Pengunjung pg ON p.Pengunjung_NIK_k = pg.NIK_k
+       JOIN Buku b        ON dp.Buku_ID_b = b.ID_b
+      WHERE dp.Waktu_Kembali_dpm IS NOT NULL
+      ${andSearch}
+      ORDER BY dp.Waktu_Kembali_dpm DESC`,
+    params
+  );
+}
+
 module.exports = {
   findAll, findById, create, returnBook,
-  daily, outstanding, perVisitor, withoutVisit,
+  daily, outstanding, perVisitor, withoutVisit, returned,
 };

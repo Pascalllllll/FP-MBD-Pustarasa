@@ -10,19 +10,8 @@ import { IconPlus, IconEdit, IconTrash } from './icons.jsx';
 
 /**
  * Config-driven master-data screen (list + create + edit + delete).
- *
- * props:
- *  - title, description, service
- *  - endpoint           e.g. '/buku'
- *  - idField            primary key field name on a row
- *  - columns            DataTable columns
- *  - fields             form field defs (also used to build the payload)
- *  - searchable         bool
- *  - writeRoles         roles allowed to create/edit
- *  - deleteRoles        roles allowed to delete
- *  - defaults           initial values for the create form
- *  - beforeSubmit(form) optional transform -> payload
- *  - canEditRow(row)    optional, gates the edit button per row (default: all rows)
+ * Key props: endpoint, idField, columns, fields, searchable, writeRoles,
+ * deleteRoles, defaults, beforeSubmit(form), canEditRow(row).
  */
 export default function ResourcePage(cfg) {
   const { hasRole } = useAuth();

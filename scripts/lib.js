@@ -32,7 +32,7 @@ function setEnvValue(filePath, key, value) {
   fs.writeFileSync(filePath, next.join('\n'));
 }
 
-/** Copies .env.example -> .env if .env is missing. Returns true if it created one. */
+/** Copies .env.example -> .env if missing; returns true if it created one. */
 function ensureEnvFile(dir) {
   const target = path.join(dir, '.env');
   const example = path.join(dir, '.env.example');

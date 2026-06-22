@@ -3,15 +3,7 @@
 const env = require('../config/env');
 const ApiError = require('../utils/ApiError');
 
-/**
- * Final error middleware. Converts thrown errors — including MySQL errors
- * raised by triggers / SIGNAL inside stored procedures — into a uniform
- * JSON shape: { success:false, message, details? }.
- *
- * Triggers in this project SIGNAL SQLSTATE '45000' with a human-readable
- * Indonesian message (e.g. "Stok makanan habis"). We surface that text
- * directly so the UI can show the business-rule violation to staff.
- */
+/** Converts thrown errors (incl. trigger SIGNALs) into { success:false, message }; trigger text is shown as-is. */
 // eslint-disable-next-line no-unused-vars
 module.exports = function errorHandler(err, req, res, next) {
   let statusCode = err.statusCode || 500;

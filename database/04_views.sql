@@ -1,8 +1,6 @@
 -- =====================================================================
---  PustaRasa — Views (20)
---  Every analytical query from the source is exposed as a view so the
---  reporting layer can simply `SELECT * FROM vw_...`. GROUP BY lists were
---  tightened to satisfy ONLY_FULL_GROUP_BY.
+--  PustaRasa — Views (20): one per analytical query so reporting can just
+--  `SELECT * FROM vw_...`. GROUP BY tightened for ONLY_FULL_GROUP_BY.
 -- =====================================================================
 USE pustarasa;
 

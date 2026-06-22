@@ -1,7 +1,6 @@
 -- =====================================================================
---  PustaRasa — Stored Procedures (3)
---  The source document only DESCRIBES these; the bodies below are
---  authored to match those descriptions and keep all logic in the DB.
+--  PustaRasa — Stored Procedures (3), authored to match the source's
+--  descriptions, keeping all logic in the DB.
 -- =====================================================================
 USE pustarasa;
 
@@ -11,14 +10,9 @@ DROP PROCEDURE IF EXISTS sp_rekap_harian;
 
 DELIMITER //
 
--- ---------------------------------------------------------------------
--- 1. CHECKOUT PESANAN
---    Creates one Pemesanan header + N Detail_Pemesanan lines atomically.
---    Items arrive as JSON: '[{"id_mk":"MK0001","qty":2}, ...]'.
---    Harga_Satuan_dps is snapshotted from Makanan.Harga_mk at sale time.
---    The BEFORE-INSERT triggers on Detail_Pemesanan validate stock & qty;
---    any failure rolls back the whole order.
--- ---------------------------------------------------------------------
+-- 1. CHECKOUT PESANAN — creates a Pemesanan header + N Detail_Pemesanan
+--    lines atomically (items arrive as JSON), snapshotting each price into
+--    Harga_Satuan_dps. BEFORE-INSERT triggers validate stock/qty per line.
 CREATE PROCEDURE sp_checkout_pesanan(
   IN  p_nik    CHAR(16),
   IN  p_nik_pj CHAR(16),
@@ -82,12 +76,8 @@ BEGIN
   COMMIT;
 END //
 
--- ---------------------------------------------------------------------
--- 2. PENGEMBALIAN BUKU
---    Stamps Waktu_Kembali_dpm on a borrowing line. The AFTER-UPDATE
---    trigger then flips the book back to 'Tidak Dipinjam'. Returns the
---    fine computed by sf_hitung_denda_peminjaman.
--- ---------------------------------------------------------------------
+-- 2. PENGEMBALIAN BUKU — stamps Waktu_Kembali_dpm; the AFTER-UPDATE trigger
+--    frees the book, and the fine comes from sf_hitung_denda_peminjaman.
 CREATE PROCEDURE sp_pengembalian_buku(
   IN  p_id_dpm   CHAR(6),
   IN  p_tanggal  DATE,
@@ -114,10 +104,7 @@ BEGIN
   SET p_denda = sf_hitung_denda_peminjaman(p_id_dpm);
 END //
 
--- ---------------------------------------------------------------------
--- 3. REKAP HARIAN
---    One-row daily summary: visits, borrowings, orders, canteen revenue.
--- ---------------------------------------------------------------------
+-- 3. REKAP HARIAN — one-row daily summary: visits, loans, orders, revenue.
 CREATE PROCEDURE sp_rekap_harian(IN p_tanggal DATE)
 BEGIN
   SELECT

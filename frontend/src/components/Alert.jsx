@@ -1,5 +1,4 @@
-// Inline status banner. Errors explain what went wrong (often a DB-trigger
-// business rule), never just "error".
+// Inline status banner; error messages explain what went wrong (often a DB-trigger rule).
 const STYLES = {
   error: 'bg-danger/10 text-danger border-danger/20',
   success: 'bg-success/10 text-success border-success/20',

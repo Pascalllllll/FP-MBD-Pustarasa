@@ -2,12 +2,7 @@
 
 const { query } = require('../config/db');
 
-/**
- * Registry of every stored FUNCTION in the schema, keyed by its real name.
- * call() only ever interpolates the function name after it's been looked up
- * here, never directly from user input, so the endpoint stays injection-safe
- * while still letting the caller supply arbitrary parameter values.
- */
+/** Registry of every stored function, keyed by name; call() only uses a name already looked up here, never raw user input, so it stays injection-safe. */
 const FUNCTION_REGISTRY = {
   sf_cek_ketersediaan_buku: {
     label: 'Cek Ketersediaan Buku',
@@ -36,8 +31,8 @@ const FUNCTION_REGISTRY = {
     label: 'Total Denda Pengunjung',
     params: [{ name: 'nik', label: 'NIK Pengunjung', placeholder: '1234567890123456' }],
   },
-  sf_cek_status_keanggotaan: {
-    label: 'Cek Status Keanggotaan',
+  sf_cek_status_pengunjung: {
+    label: 'Cek Status Pengunjung',
     params: [{ name: 'nik', label: 'NIK Pengunjung', placeholder: '1234567890123456' }],
   },
   sf_durasi_kunjungan_rata_rata: {

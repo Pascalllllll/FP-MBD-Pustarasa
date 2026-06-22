@@ -15,5 +15,7 @@ const outstanding = asyncHandler(async (_req, res) =>
   res.json({ success: true, data: await service.outstanding() }));
 const daily = asyncHandler(async (_req, res) =>
   res.json({ success: true, data: await service.daily() }));
+const returned = asyncHandler(async (req, res) =>
+  res.json({ success: true, data: await service.returned(req.query.search) }));
 
-module.exports = { list, get, create, returnBook, outstanding, daily };
+module.exports = { list, get, create, returnBook, outstanding, daily, returned };

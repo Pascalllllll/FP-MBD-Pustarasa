@@ -4,10 +4,7 @@ const jwt = require('jsonwebtoken');
 const env = require('../config/env');
 const ApiError = require('../utils/ApiError');
 
-/**
- * Verifies the Bearer token and attaches { id, username, role, staffNik }
- * to req.user. Rejects with 401 when missing/invalid.
- */
+/** Verifies the Bearer token and attaches its payload to req.user; 401 if missing/invalid. */
 function authenticate(req, _res, next) {
   const header = req.headers.authorization || '';
   const token = header.startsWith('Bearer ') ? header.slice(7) : null;
@@ -28,10 +25,7 @@ function authenticate(req, _res, next) {
   }
 }
 
-/**
- * Restricts a route to one or more roles. Usage:
- *   router.post('/', requireRole('admin', 'pustakawan'), handler)
- */
+/** Restricts a route to the given roles, e.g. requireRole('admin', 'pustakawan'). */
 function requireRole(...roles) {
   return (req, _res, next) => {
     if (!req.user) return next(ApiError.unauthorized());

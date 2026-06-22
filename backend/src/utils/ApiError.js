@@ -1,9 +1,6 @@
 'use strict';
 
-/**
- * Operational error with an attached HTTP status code. Thrown anywhere
- * in the stack and translated to a JSON response by errorHandler.
- */
+/** Error with an HTTP status code; translated to JSON by errorHandler. */
 class ApiError extends Error {
   constructor(statusCode, message, details = undefined) {
     super(message);

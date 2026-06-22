@@ -1,20 +1,7 @@
 -- =====================================================================
---  PustaRasa  ·  07_seed_accounts.sql
---  Akun login aplikasi (hash bcrypt, cost 10).
---
---  Kredensial default (GANTI sebelum dipakai sungguhan!):
---    +-------------+-----------+-------------+---------------------------+
---    | username    | sandi     | peran       | tertaut ke (NIK)          |
---    +-------------+-----------+-------------+---------------------------+
---    | admin       | admin123  | admin       | -                         |
---    | pustakawan  | staff123  | pustakawan  | 5678901234567890 Adit     |
---    | penjual     | staff123  | penjual     | 4567890123456789 Agung    |
---    | pengunjung  | lihat123  | pengunjung  | 1234567890123456 Ahmad    |
---    +-------------+-----------+-------------+---------------------------+
---
---  Peran 'pengunjung' = MODE LIHAT-SAJA (read-only): bisa menelusuri
---  katalog buku, menu kantin, dasbor, dan laporan; tidak bisa menambah,
---  mengubah, atau menghapus apa pun.
+--  PustaRasa · 07_seed_accounts.sql — akun login (bcrypt, cost 10).
+--  Default (GANTI sebelum dipakai sungguhan!): admin/admin123, pustakawan
+--  & penjual/staff123, pengunjung/lihat123 (peran pengunjung = lihat-saja).
 -- =====================================================================
 USE pustarasa;
 

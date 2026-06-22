@@ -1,8 +1,5 @@
-// Decorative, animated background blobs. Rendered as the first child of
-// <main> (absolute, z-0) so they sit above the page's own bg-paper but
-// below the centered content — visible only in the empty margins beside
-// it. A negative/fixed z-index here would paint behind <body>'s own
-// background and never be visible at all, regardless of empty space.
+// Decorative blobs, absolute/z-0 above bg-paper but below content.
+// A negative/fixed z-index would paint behind <body> instead.
 export default function AmbientBlobs() {
   return (
     <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true">

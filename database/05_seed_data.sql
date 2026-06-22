@@ -1,12 +1,7 @@
 -- =====================================================================
---  PustaRasa  ·  05_seed_data.sql
---  Data contoh — DIAMBIL PERSIS dari file SQL sumber Anda.
---
---  PENTING: file ini dijalankan SEBELUM 06_triggers.sql. Data historis
---  ini sudah konsisten secara internal (mis. status buku 'Dipinjam'
---  sudah sesuai dengan baris peminjaman). Trigger sengaja dipasang
---  SETELAH data masuk agar tidak ikut memvalidasi data lama; trigger
---  hanya menjaga operasi BARU dari aplikasi.
+--  PustaRasa · 05_seed_data.sql — data contoh dari sumber asli.
+--  Dijalankan SEBELUM 06_triggers.sql agar trigger tidak ikut memvalidasi
+--  data historis ini; trigger hanya menjaga operasi baru dari aplikasi.
 -- =====================================================================
 USE pustarasa;
 

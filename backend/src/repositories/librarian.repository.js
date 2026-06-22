@@ -22,10 +22,7 @@ async function findById(nik) {
   return rows[0] || null;
 }
 
-/**
- * trg_validasi_umur_pustakawan enforces age >= 18 on insert/update, so an
- * underage Tanggal_Lahir_pt will be rejected at the DB layer.
- */
+/** trg_validasi_umur_pustakawan rejects an underage Tanggal_Lahir_pt at the DB layer. */
 async function create(data) {
   await query(
     `INSERT INTO Pustakawan

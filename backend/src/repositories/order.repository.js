@@ -52,22 +52,13 @@ async function findById(id) {
   return { ...header[0], items: lines };
 }
 
-/**
- * Place an order by delegating entirely to sp_checkout_pesanan. The
- * procedure runs its own transaction: it inserts the header, snapshots
- * each food price into Harga_Satuan_dps, and lets triggers
- * trg_validasi_makanan_habis + trg_validasi_kuantitas_pesanan validate
- * each line. Returns the generated id and total.
- *
- * @param {object} data { nik, nikPj, idMp, items: [{ id_mk, qty }] }
- */
+/** Places an order via sp_checkout_pesanan, which snapshots prices and lets triggers validate stock/qty per line. */
 async function checkout(data) {
   const conn = await pool.getConnection();
   try {
     await conn.query(`SET @id_ps = ''`);
     await conn.query(`SET @total = 0`);
-    // The procedure parameter is typed JSON; passing the JSON string
-    // directly works on both MySQL 8 (implicit string->JSON) and MariaDB.
+    // JSON param: passing a JSON string works on both MySQL 8 and MariaDB.
     await conn.query(
       `CALL sp_checkout_pesanan(?, ?, ?, ?, @id_ps, @total)`,
       [data.nik, data.nikPj, data.idMp, JSON.stringify(data.items)]

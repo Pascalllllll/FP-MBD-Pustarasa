@@ -1,9 +1,6 @@
 -- =====================================================================
---  PustaRasa — Stored Functions  (8)
---  These encapsulate read-only business calculations. The web app calls
---  them instead of re-implementing the maths in JavaScript.
---  NOTE: changed the source's `DETERMINISTIC` to the correct
---  `NOT DETERMINISTIC READS SQL DATA` (they read tables).
+--  PustaRasa — Stored Functions (8): read-only calculations called by the
+--  app. Declared NOT DETERMINISTIC READS SQL DATA (they read tables).
 -- =====================================================================
 USE pustarasa;
 
@@ -11,7 +8,7 @@ DROP FUNCTION IF EXISTS sf_cek_ketersediaan_buku;
 DROP FUNCTION IF EXISTS sf_total_pengeluaran_pengunjung;
 DROP FUNCTION IF EXISTS sf_hitung_denda_peminjaman;
 DROP FUNCTION IF EXISTS sf_hitung_total_pemesanan;
-DROP FUNCTION IF EXISTS sf_cek_status_keanggotaan;
+DROP FUNCTION IF EXISTS sf_cek_status_pengunjung;
 DROP FUNCTION IF EXISTS sf_total_denda_pengunjung;
 DROP FUNCTION IF EXISTS sf_rekomendasi_buku;
 DROP FUNCTION IF EXISTS sf_durasi_kunjungan_rata_rata;
@@ -39,13 +36,14 @@ BEGIN
   RETURN IFNULL(v_total, 0);
 END //
 
--- 3. Late-return fine for ONE borrowing line.
+-- 3. Late-return fine for ONE borrowing line. Falls back to CURDATE() while
+--    still outstanding, so an overdue loan accrues a running fine instead of 0.
 CREATE FUNCTION sf_hitung_denda_peminjaman(p_id_dpm CHAR(6))
 RETURNS DECIMAL(12,2) NOT DETERMINISTIC READS SQL DATA
 BEGIN
   DECLARE v_denda DECIMAL(12,2);
-  SELECT IF(dp.Waktu_Kembali_dpm > p.Batas_Kembali_pm,
-            DATEDIFF(dp.Waktu_Kembali_dpm, p.Batas_Kembali_pm) * dp.Denda_Per_Hari_dpm,
+  SELECT IF(IFNULL(dp.Waktu_Kembali_dpm, CURDATE()) > p.Batas_Kembali_pm,
+            DATEDIFF(IFNULL(dp.Waktu_Kembali_dpm, CURDATE()), p.Batas_Kembali_pm) * dp.Denda_Per_Hari_dpm,
             0)
   INTO v_denda
   FROM Detail_Peminjaman dp
@@ -64,21 +62,32 @@ BEGIN
   RETURN IFNULL(v_total, 0);
 END //
 
--- 5. Membership check used before allowing a transaction.
-CREATE FUNCTION sf_cek_status_keanggotaan(p_nik CHAR(16))
+-- 5. Registration check used before allowing a transaction.
+CREATE FUNCTION sf_cek_status_pengunjung(p_nik CHAR(16))
 RETURNS VARCHAR(20) NOT DETERMINISTIC READS SQL DATA
 BEGIN
-  RETURN IF((SELECT COUNT(*) FROM Pengunjung WHERE NIK_k = p_nik) > 0,
-            'Aktif', 'Tidak Terdaftar');
+  DECLARE v_status VARCHAR(20);
+
+  IF EXISTS (
+      SELECT 1
+      FROM Pengunjung
+      WHERE NIK_k = p_nik
+  ) THEN
+    SET v_status = 'Terdaftar';
+  ELSE
+    SET v_status = 'Tidak Terdaftar';
+  END IF;
+
+  RETURN v_status;
 END //
 
--- 6. Total accrued fine across ALL of a visitor's returned-late books.
+-- 6. Total fine across all of a visitor's late books, incl. outstanding ones.
 CREATE FUNCTION sf_total_denda_pengunjung(p_nik CHAR(16))
 RETURNS DECIMAL(12,2) NOT DETERMINISTIC READS SQL DATA
 BEGIN
   DECLARE v_total DECIMAL(12,2);
-  SELECT SUM(IF(dp.Waktu_Kembali_dpm > p.Batas_Kembali_pm,
-                DATEDIFF(dp.Waktu_Kembali_dpm, p.Batas_Kembali_pm) * dp.Denda_Per_Hari_dpm,
+  SELECT SUM(IF(IFNULL(dp.Waktu_Kembali_dpm, CURDATE()) > p.Batas_Kembali_pm,
+                DATEDIFF(IFNULL(dp.Waktu_Kembali_dpm, CURDATE()), p.Batas_Kembali_pm) * dp.Denda_Per_Hari_dpm,
                 0))
   INTO v_total
   FROM Detail_Peminjaman dp
@@ -87,15 +96,9 @@ BEGIN
   RETURN IFNULL(v_total, 0);
 END //
 
--- 7. Most-borrowed title within a genre (reading suggestion engine),
---    excluding the book's own title (a title may exist as several copies).
---    p_judul_exclude is optional: NULL/'' means "no exclusion" — a plain
---    `<> p_judul_exclude` would silently match zero rows here, because SQL
---    comparisons against NULL are NULL (neither true nor false), not TRUE.
---    GROUP BY is by title only (not ID_b): a title can have several physical
---    copies, and each copy's borrows must add up to that title's true total
---    instead of being split into several smaller per-copy counts. The
---    secondary ORDER BY key keeps the pick stable when two titles tie.
+-- 7. Most-borrowed title in the genre, excluding the book's own title.
+--    p_judul_exclude NULL/'' = no exclusion (plain `<> NULL` matches nothing).
+--    Grouped by title, not ID_b, so multi-copy titles get their true total count.
 CREATE FUNCTION sf_rekomendasi_buku(p_jenis VARCHAR(50), p_judul_exclude VARCHAR(200))
 RETURNS VARCHAR(200) NOT DETERMINISTIC READS SQL DATA
 BEGIN

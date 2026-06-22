@@ -1,14 +1,7 @@
 -- =====================================================================
---  PustaRasa — Triggers (13)
---  Reproduced from the source document (corrected where needed) so the
---  database enforces its own rules. The web app never duplicates these.
---
---  3 of the original 11 only fired on INSERT even though the rule logically
---  also applies when the row is later UPDATEd through the web (check-out,
---  editing a librarian's birthdate, editing a visitor's email). Each gets
---  a companion BEFORE UPDATE trigger below with identical logic, so the
---  rule is actually enforced on every path the app exposes — see
---  docs/DATABASE.md §4 for the full rationale.
+--  PustaRasa — Triggers (13): the DB enforces its own rules; the app never
+--  duplicates them. 3 rules also get a BEFORE UPDATE twin (suffixed _update)
+--  since the INSERT-only original never fired on edits — see DATABASE.md §4.
 -- =====================================================================
 USE pustarasa;
 
@@ -70,10 +63,7 @@ BEGIN
   END IF;
 END //
 
--- 4b. Same rule on UPDATE: check-out always sets Waktu_Keluar_wk via
--- UPDATE (check-in INSERTs the row with it still NULL), so without this
--- companion trigger the INSERT-only version above never actually fires
--- for a real check-out.
+-- 4b. Same rule on UPDATE — check-out sets Waktu_Keluar_wk via UPDATE, not INSERT.
 CREATE TRIGGER trg_validasi_waktu_kunjung_update
 BEFORE UPDATE ON Waktu_kunjung
 FOR EACH ROW
@@ -130,8 +120,7 @@ BEGIN
   END IF;
 END //
 
--- 8b. Same rule on UPDATE: the web lets admin edit an existing librarian's
--- Tanggal_Lahir_pt, which would otherwise bypass the INSERT-only check.
+-- 8b. Same rule on UPDATE — admin can edit an existing librarian's birthdate too.
 CREATE TRIGGER trg_validasi_umur_pustakawan_update
 BEFORE UPDATE ON Pustakawan
 FOR EACH ROW
@@ -153,8 +142,7 @@ BEGIN
   END IF;
 END //
 
--- 9b. Same rule on UPDATE: Visitors.jsx lets staff edit an existing
--- visitor's Email_k, which would otherwise bypass the INSERT-only check.
+-- 9b. Same rule on UPDATE — staff can edit an existing visitor's email too.
 CREATE TRIGGER trg_validasi_email_pengunjung_update
 BEFORE UPDATE ON Pengunjung
 FOR EACH ROW
@@ -165,10 +153,9 @@ BEGIN
   END IF;
 END //
 
--- 10a. NIK is immutable for everyone except admin (who may fix a visitor's
--- original input mistake). The app sets the session variable @app_role to
--- the caller's role right before this UPDATE; the trigger is what actually
--- decides, so the rule still lives in the database, not in app code.
+-- 10a. NIK is immutable except for admin. The app sets session var @app_role
+-- right before this UPDATE; the trigger reads it and decides, so the rule
+-- still lives in the DB, not in app code.
 CREATE TRIGGER trg_validasi_update_nik
 BEFORE UPDATE ON Pengunjung
 FOR EACH ROW

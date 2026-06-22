@@ -27,7 +27,7 @@ export default function Orders() {
                 key={t}
                 onClick={() => setTab(t)}
                 className={`rounded-md px-3 py-1.5 text-sm font-semibold capitalize transition-colors ${
-                  tab === t ? 'bg-canteen text-canteen-ink' : 'text-muted hover:text-ink'
+                  tab === t ? 'bg-canteen text-white' : 'text-muted hover:text-ink'
                 }`}
               >
                 {t}
@@ -96,9 +96,7 @@ function PosScreen({ user }) {
 
   const add = (food) =>
     setCart((c) => ({ ...c, [food.ID_mk]: { food, qty: (c[food.ID_mk]?.qty || 0) + 1 } }));
-  // Quantity is left exactly as typed/clicked, including 0 or negative — checkout
-  // sends it as-is so trg_validasi_kuantitas_pesanan is what rejects bad values,
-  // not the cart UI silently dropping the line.
+  // Qty is sent as-is (even 0/negative) — the trigger rejects bad values, not the UI.
   const setQty = (id, qty) =>
     setCart((c) => ({ ...c, [id]: { ...c[id], qty } }));
   const removeFromCart = (id) =>

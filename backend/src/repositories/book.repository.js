@@ -32,10 +32,7 @@ async function checkAvailability(id) {
   return rows[0] ? rows[0].ketersediaan : null;
 }
 
-/**
- * Recommend the most-borrowed title in the same genre via sf_rekomendasi_buku,
- * excluding the book's own title (judul) so it never recommends itself.
- */
+/** Most-borrowed title in the genre via sf_rekomendasi_buku, excluding the book's own title. */
 async function recommendByGenre(jenis, judul) {
   const rows = await query(`SELECT sf_rekomendasi_buku(?, ?) AS rekomendasi`, [jenis, judul]);
   return rows[0] ? rows[0].rekomendasi : null;
@@ -67,10 +64,7 @@ async function create(data) {
   }
 }
 
-/**
- * Keterangan_b is the live circulation flag maintained by triggers, so it
- * is deliberately excluded from manual edits here.
- */
+/** Keterangan_b is maintained by triggers, so it's excluded from manual edits. */
 async function update(id, data) {
   await query(
     `UPDATE Buku

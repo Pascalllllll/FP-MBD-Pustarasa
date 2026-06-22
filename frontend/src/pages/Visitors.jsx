@@ -120,10 +120,10 @@ export default function Visitors() {
   };
 
   const statusChip = (s) =>
-    s === 'Aktif' ? (
-      <span className="chip bg-success/10 text-success">Aktif</span>
+    s === 'Terdaftar' ? (
+      <span className="chip bg-success/10 text-success">Terdaftar</span>
     ) : (
-      <span className="chip bg-ink/5 text-muted">{s || 'Tidak Aktif'}</span>
+      <span className="chip bg-ink/5 text-muted">{s || 'Tidak Terdaftar'}</span>
     );
 
   return (
@@ -239,7 +239,7 @@ export default function Visitors() {
                 <h3 className="font-display text-xl font-bold">{detail.Nama_k}</h3>
                 <p className="font-mono text-xs text-muted">{detail.NIK_k}</p>
               </div>
-              {statusChip(detail.status_keanggotaan)}
+              {statusChip(detail.status_pengunjung)}
             </div>
 
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -251,7 +251,7 @@ export default function Visitors() {
               Metrik dihitung oleh fungsi <span className="font-mono">sf_total_pengeluaran_pengunjung</span>,{' '}
               <span className="font-mono">sf_total_denda_pengunjung</span>,{' '}
               <span className="font-mono">sf_durasi_kunjungan_rata_rata</span>, dan{' '}
-              <span className="font-mono">sf_cek_status_keanggotaan</span>.
+              <span className="font-mono">sf_cek_status_pengunjung</span>.
             </p>
           </div>
         ) : (

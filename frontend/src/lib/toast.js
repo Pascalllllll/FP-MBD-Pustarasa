@@ -1,5 +1,4 @@
-// Minimal pub/sub so non-React modules (api/client.js) can push toasts
-// without importing React. ToastContainer is the sole subscriber.
+// Minimal pub/sub so non-React modules (api/client.js) can push toasts.
 let nextId = 1;
 const listeners = new Set();
 

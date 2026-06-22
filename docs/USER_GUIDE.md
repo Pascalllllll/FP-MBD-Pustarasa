@@ -17,7 +17,7 @@ Di bawahnya ada strip **Kunjungan** dan kartu **Rekap Harian** (dihitung oleh pr
 
 ### Pengunjung
 - Klik **Tambah** untuk mendaftarkan pengunjung (butuh NIK 16 digit; email divalidasi oleh basis data).
-- Klik **nama** pengunjung untuk membuka profil: total belanja, total denda, rata-rata durasi kunjungan, dan status keanggotaan. Semua angka dihitung langsung oleh fungsi basis data.
+- Klik **nama** pengunjung untuk membuka profil: total belanja, total denda, rata-rata durasi kunjungan, dan status pendaftaran (Terdaftar/Tidak Terdaftar). Semua angka dihitung langsung oleh fungsi basis data.
 - Saat mengubah data, **NIK tidak bisa diganti** (dikunci basis data). Jika alamat diubah, perubahannya tercatat otomatis.
 
 ### Buku Tamu (Kunjungan)

@@ -14,11 +14,7 @@ async function get(id) {
   return row;
 }
 
-/**
- * Validates references then delegates to sp_checkout_pesanan. Stock and
- * quantity rules live in triggers, so an out-of-stock item or qty <= 0
- * rolls the whole order back with the trigger's message.
- */
+/** Validates refs then delegates to sp_checkout_pesanan; trigger errors roll back the whole order. */
 async function checkout(payload) {
   const [visitor, seller, method] = await Promise.all([
     visitorRepo.findById(payload.nik),

@@ -1,6 +1,4 @@
-// Small colored chip that brands every module by service. This persistent
-// color-coding (violet = perpustakaan, marigold = kantin) is the signature
-// device that ties the whole app to the PustaRasa dual-world concept.
+// Color-coded chip per service (violet = perpustakaan, marigold = kantin).
 
 const STYLES = {
   perpustakaan: 'bg-library-soft text-library-ink',

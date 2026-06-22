@@ -2,11 +2,7 @@
 
 const { query, pool } = require('../config/db');
 
-/**
- * Registry of every analytical VIEW in the schema, keyed by a stable slug
- * the frontend Reports page can request. This guarantees all 20 views are
- * reachable through the API. Grouped by service for the UI.
- */
+/** Registry of all 20 analytical views, keyed by slug, grouped by service. */
 const VIEW_REGISTRY = {
   status_buku: { view: 'vw_status_buku', title: 'Status Semua Buku', service: 'perpustakaan' },
   buku_terpopuler: { view: 'vw_buku_terpopuler', title: 'Buku Terpopuler', service: 'perpustakaan' },

@@ -1,11 +1,6 @@
 -- =====================================================================
---  PustaRasa  ·  01_schema.sql
---  Skema basis data (11 tabel inti dari sumber + 1 tabel pendukung app).
---
---  Tabel inti & relasi mengikuti file sumber Anda PERSIS.
---  Tabel terakhir (app_account) ditambahkan HANYA untuk kebutuhan
---  aplikasi (login berbasis peran) dan tidak mengubah struktur tabel
---  inti. Lihat docs/DATABASE.md.
+--  PustaRasa · 01_schema.sql — 11 tabel inti (sesuai sumber) + app_account
+--  (tabel login, tambahan aplikasi). Lihat docs/DATABASE.md.
 -- =====================================================================
 
 DROP database IF EXISTS pustarasa;
@@ -190,13 +185,8 @@ CREATE TABLE Detail_Pemesanan (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
--- ---------------------------------------------------------------------
--- TABEL PENDUKUNG APLIKASI (di luar ERD sumber)
--- ---------------------------------------------------------------------
-
--- Akun login aplikasi. Tidak ada pada ERD (staf tak punya sandi),
--- jadi ditambahkan terpisah. role 'pengunjung' = mode lihat-saja.
--- staff_nik opsional menautkan akun ke baris Pustakawan/Penjual.
+-- Tabel pendukung aplikasi (di luar ERD sumber): akun login; role
+-- 'pengunjung' = lihat-saja, staff_nik opsional menaut ke Pustakawan/Penjual.
 CREATE TABLE app_account (
     id            INT          NOT NULL AUTO_INCREMENT,
     username      VARCHAR(50)  NOT NULL,

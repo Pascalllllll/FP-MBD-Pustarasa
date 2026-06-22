@@ -15,10 +15,7 @@ async function get(id) {
   return row;
 }
 
-/**
- * Validates references then creates the loan. Book-availability and date
- * rules are enforced by triggers; we surface those errors as-is.
- */
+/** Validates refs then creates the loan; trigger errors surface as-is. */
 async function create(payload) {
   const [visitor, librarian] = await Promise.all([
     visitorRepo.findById(payload.nik),
@@ -55,7 +52,8 @@ const outstanding = () => repo.outstanding();
 const daily = () => repo.daily();
 const perVisitor = () => repo.perVisitor();
 const withoutVisit = () => repo.withoutVisit();
+const returned = (search) => repo.returned(search);
 
 module.exports = {
-  list, get, create, returnBook, outstanding, daily, perVisitor, withoutVisit,
+  list, get, create, returnBook, outstanding, daily, perVisitor, withoutVisit, returned,
 };

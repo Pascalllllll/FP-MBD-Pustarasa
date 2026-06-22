@@ -1,14 +1,6 @@
 'use strict';
 
-/**
- * Idempotent seeder for the app_account table. Lets you (re)create the
- * default logins without re-running the SQL file, e.g. to reset a password.
- *
- *   npm run seed:accounts
- *
- * Safe to run repeatedly: uses INSERT ... ON DUPLICATE KEY UPDATE keyed on
- * the unique username.
- */
+/** Idempotent seeder for app_account — `npm run seed:accounts` to (re)create default logins. */
 const bcrypt = require('bcryptjs');
 const { pool } = require('../config/db');
 

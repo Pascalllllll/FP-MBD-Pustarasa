@@ -22,18 +22,12 @@ async function findById(nik) {
   return rows[0] || null;
 }
 
-/**
- * Rich profile: base row + derived metrics computed by stored FUNCTIONS.
- * - sf_cek_status_keanggotaan : Aktif / Tidak Aktif membership label
- * - sf_total_pengeluaran_pengunjung : lifetime canteen spend
- * - sf_total_denda_pengunjung : lifetime library fines
- * - sf_durasi_kunjungan_rata_rata : average visit duration (minutes)
- */
+/** Profile = base row + derived metrics from 4 stored functions (see SELECT below). */
 async function findProfile(nik) {
   const rows = await query(
     `SELECT
         p.NIK_k, p.Nama_k, p.No_Telp_k, p.Email_k, p.Alamat_k,
-        sf_cek_status_keanggotaan(p.NIK_k)        AS status_keanggotaan,
+        sf_cek_status_pengunjung(p.NIK_k)         AS status_pengunjung,
         sf_total_pengeluaran_pengunjung(p.NIK_k)  AS total_pengeluaran,
         sf_total_denda_pengunjung(p.NIK_k)        AS total_denda,
         sf_durasi_kunjungan_rata_rata(p.NIK_k)    AS durasi_kunjungan_rata2
@@ -54,12 +48,9 @@ async function create(data) {
 }
 
 /**
- * NIK_k is included in the SET clause on purpose: if the caller changes it,
- * trg_validasi_update_nik fires and rejects the whole statement (SIGNAL
- * 45000) — unless the caller is admin. @app_role is a connection-scoped
- * session variable the trigger reads; it must be set on the same
- * connection right before the UPDATE, hence the dedicated pool connection
- * instead of the shared `query()` helper.
+ * NIK_k stays in the SET clause so trg_validasi_update_nik can reject the
+ * change (unless admin); @app_role must be set on this same connection, hence
+ * the dedicated connection instead of the shared `query()` helper.
  */
 async function update(nik, data, role) {
   const conn = await pool.getConnection();

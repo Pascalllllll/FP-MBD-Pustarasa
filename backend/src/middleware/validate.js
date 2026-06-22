@@ -3,10 +3,7 @@
 const { validationResult } = require('express-validator');
 const ApiError = require('../utils/ApiError');
 
-/**
- * Runs after a chain of express-validator rules. Collects any errors and
- * throws a 400 with a field-keyed details object.
- */
+/** Collects express-validator errors and throws a 400 with field-keyed details. */
 module.exports = function validate(req, _res, next) {
   const result = validationResult(req);
   if (result.isEmpty()) return next();

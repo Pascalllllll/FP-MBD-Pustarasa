@@ -43,12 +43,7 @@ async function checkIn(nik, waktuMasuk) {
   }
 }
 
-/**
- * Stamp the exit time. trg_validasi_waktu_kunjung guarantees the exit is
- * not earlier than the entry, raising a SIGNAL otherwise. waktuKeluar (and
- * waktuMasuk above) may arrive as a datetime-local string from the web
- * form, so it's wrapped in `new Date()` here for mysql2.
- */
+/** Stamps exit time (wrapped in new Date() for mysql2); trg_validasi_waktu_kunjung rejects exit < entry. */
 async function checkOut(id, waktuKeluar) {
   const res = await query(
     `UPDATE Waktu_kunjung

@@ -3,13 +3,7 @@
 const mysql = require('mysql2/promise');
 const env = require('./env');
 
-/**
- * Single shared connection pool. We enable multipleStatements:false
- * (default) for safety and rely on parameterised queries everywhere.
- *
- * `namedPlaceholders` lets repositories pass objects to CALL/SELECT,
- * which keeps stored-procedure calls readable.
- */
+/** Shared connection pool; parameterised queries everywhere, namedPlaceholders for readable CALL/SELECT. */
 const pool = mysql.createPool({
   host: env.db.host,
   port: env.db.port,

@@ -3,8 +3,7 @@ import {
   IconFood, IconCart, IconLibrarian, IconSeller, IconCard, IconReport, IconBolt,
 } from './icons.jsx';
 
-// roles: which roles may see/visit. Empty/undefined = all authenticated
-// (including the read-only 'pengunjung'). STAFF = everyone except pengunjung.
+// roles: who may see this item; empty = everyone incl. 'pengunjung'.
 const STAFF = ['admin', 'pustakawan', 'penjual'];
 
 export const NAV_GROUPS = [

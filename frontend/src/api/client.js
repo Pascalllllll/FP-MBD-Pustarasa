@@ -1,6 +1,4 @@
-// Thin fetch wrapper. Attaches the JWT, unwraps { success, data }, and
-// throws an Error carrying the server's Indonesian message + field details
-// (including business-rule violations raised by DB triggers).
+// Thin fetch wrapper: attaches JWT, unwraps { success, data }, throws errors with the server's message.
 
 import { toast } from '../lib/toast.js';
 

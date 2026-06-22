@@ -54,7 +54,7 @@ Semua dideklarasikan `NOT DETERMINISTIC READS SQL DATA` karena membaca tabel.
 | `sf_total_pengeluaran_pengunjung(nik)` | DECIMAL | Total belanja kantin seumur hidup pengunjung |
 | `sf_hitung_denda_peminjaman(id_dpm)` | DECIMAL | Denda satu baris pinjam = hari telat × denda/hari |
 | `sf_hitung_total_pemesanan(id_ps)` | DECIMAL | Total satu pesanan = Σ(kuantitas × harga satuan) |
-| `sf_cek_status_keanggotaan(nik)` | VARCHAR | "Aktif"/"Tidak Aktif" berdasarkan keberadaan aktivitas |
+| `sf_cek_status_pengunjung(nik)` | VARCHAR | "Terdaftar"/"Tidak Terdaftar" berdasarkan keberadaan NIK di tabel `Pengunjung` |
 | `sf_total_denda_pengunjung(nik)` | DECIMAL | Akumulasi denda seluruh peminjaman pengunjung |
 | `sf_rekomendasi_buku(jenis, judul_exclude)` | VARCHAR | Judul paling sering dipinjam pada genre sama, mengecualikan `judul_exclude` (buku itu sendiri) |
 | `sf_durasi_kunjungan_rata_rata(nik)` | DECIMAL | Rata-rata durasi kunjungan (menit) |
@@ -124,7 +124,7 @@ Tabel ini menjawab persyaratan inti: **setiap** objek basis data benar-benar dip
 | `sf_hitung_total_pemesanan` | Function | **Kasir** (daftar & detail pesanan, kolom total) |
 | `sf_total_pengeluaran_pengunjung` | Function | **Pengunjung** → drawer profil |
 | `sf_total_denda_pengunjung` | Function | **Pengunjung** → drawer profil |
-| `sf_cek_status_keanggotaan` | Function | **Pengunjung** → badge status (Aktif/Tidak) |
+| `sf_cek_status_pengunjung` | Function | **Pengunjung** → badge status (Terdaftar/Tidak Terdaftar) |
 | `sf_durasi_kunjungan_rata_rata` | Function | **Pengunjung** → drawer profil |
 | `trg_update_buku_dipinjam` | Trigger | Otomatis saat membuat **Peminjaman** |
 | `trg_update_buku_dikembalikan` | Trigger | Otomatis saat **Pengembalian** |

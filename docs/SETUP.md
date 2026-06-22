@@ -76,7 +76,7 @@ SHOW TRIGGERS;                                  -- 13 baris
 SELECT COUNT(*) FROM information_schema.VIEWS WHERE TABLE_SCHEMA='pustarasa';  -- 20
 ```
 
-Untuk **menampilkan & menguji trigger** lebih lengkap, lihat bagian "Menampilkan Trigger" di `README.md`.
+Untuk **menampilkan & menguji trigger** lebih lengkap, lihat bagian "Menguji Trigger Lewat Web" di `README.md`.
 
 ## 3. Menjalankan Backend
 

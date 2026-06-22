@@ -9,6 +9,37 @@ import { formatDate, formatRupiah, todayISO } from '../lib/format.js';
 import { IconReturn } from '../components/icons.jsx';
 
 export default function Returns() {
+  const [tab, setTab] = useState('belum');
+
+  return (
+    <div>
+      <PageHeader
+        title="Pengembalian"
+        service="perpustakaan"
+        description="Daftar buku yang masih dipinjam. Proses pengembalian memanggil prosedur sp_pengembalian_buku, yang mencatat tanggal kembali, melepas status buku, dan menghitung denda."
+        actions={
+          <div className="flex rounded-lg border border-line bg-surface p-0.5">
+            {['belum', 'riwayat'].map((t) => (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                className={`rounded-md px-3 py-1.5 text-sm font-semibold transition-colors ${
+                  tab === t ? 'bg-library text-white' : 'text-muted hover:text-ink'
+                }`}
+              >
+                {t === 'belum' ? 'Belum Kembali' : 'Riwayat'}
+              </button>
+            ))}
+          </div>
+        }
+      />
+
+      {tab === 'belum' ? <PendingScreen /> : <ReturnedHistory />}
+    </div>
+  );
+}
+
+function PendingScreen() {
   const { hasRole } = useAuth();
   const canManage = hasRole('admin', 'pustakawan');
 
@@ -63,12 +94,6 @@ export default function Returns() {
 
   return (
     <div>
-      <PageHeader
-        title="Pengembalian"
-        service="perpustakaan"
-        description="Daftar buku yang masih dipinjam. Proses pengembalian memanggil prosedur sp_pengembalian_buku, yang mencatat tanggal kembali, melepas status buku, dan menghitung denda."
-      />
-
       {listError && (
         <div className="mb-3">
           <Alert type="error">{listError}</Alert>
@@ -164,6 +189,67 @@ export default function Returns() {
           </div>
         )}
       </Modal>
+    </div>
+  );
+}
+
+function ReturnedHistory() {
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [error, setError] = useState('');
+
+  const load = useCallback(async (q) => {
+    setLoading(true);
+    setError('');
+    try {
+      setRows(await api.get('/peminjaman/reports/returned', { search: q }));
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const t = setTimeout(() => load(search), 250);
+    return () => clearTimeout(t);
+  }, [search, load]);
+
+  return (
+    <div>
+      {error && (
+        <div className="mb-3">
+          <Alert type="error">{error}</Alert>
+        </div>
+      )}
+
+      <DataTable
+        columns={[
+          { key: 'ID_dpm', header: 'ID Detail', className: 'font-mono text-xs' },
+          { key: 'Judul_b', header: 'Judul', render: (r) => <span className="font-medium">{r.Judul_b}</span> },
+          { key: 'Nama_Peminjam', header: 'Peminjam' },
+          { key: 'batas', header: 'Batas Kembali', render: (r) => formatDate(r.Batas_Kembali_pm) },
+          { key: 'kembali', header: 'Tgl Kembali', render: (r) => formatDate(r.Waktu_Kembali_dpm) },
+          {
+            key: 'denda',
+            header: 'Denda',
+            render: (r) =>
+              Number(r.denda) > 0 ? (
+                <span className="font-semibold text-danger">{formatRupiah(r.denda)}</span>
+              ) : (
+                <span className="chip bg-success/10 text-success">Tepat waktu</span>
+              ),
+          },
+        ]}
+        rows={rows}
+        loading={loading}
+        rowKey={(r) => r.ID_dpm}
+        search={search}
+        onSearch={setSearch}
+        searchPlaceholder="Cari judul / peminjam…"
+        empty="Belum ada riwayat pengembalian."
+      />
     </div>
   );
 }
