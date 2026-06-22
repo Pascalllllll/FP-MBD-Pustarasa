@@ -70,11 +70,11 @@ Kedelapannya juga bisa dipanggil bebas dengan parameter sendiri lewat halaman **
 
 | Procedure | Dipakai di |
 |---|---|
-| `sp_checkout_pesanan` | Kasir & Pesanan → "Proses Pesanan" (transaksional, snapshot harga per item) |
+| `sp_checkout_pesanan` | Kasir & Pesanan → "Proses Pesanan" (versi rekan satu tim — bikin header; item & validasi trigger ditangani backend dalam transaksi yang sama) |
 | `sp_pengembalian_buku` | Pengembalian → "Konfirmasi Pengembalian" |
 | `sp_rekap_harian` | Dasbor & Laporan → kartu Rekap Harian |
 
-Halaman **Uji Procedure** (admin) memanggil `sp_rekap_harian` persis seperti di atas; untuk checkout/pengembalian ia memanggil `sp_checkout_pesanan_sederhana`/`sp_pengembalian_buku_sederhana` (versi rekan satu tim, objek terpisah) — tidak memengaruhi yang dipakai Kasir & Pesanan/Pengembalian sungguhan.
+Ketiganya juga bisa dipanggil bebas lewat halaman **Uji Procedure** (admin) — objek yang sama persis, bukan salinan.
 
 ### Trigger (13)
 

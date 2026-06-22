@@ -2,13 +2,9 @@
 
 const { pool } = require('../config/db');
 
-/**
- * outs: null = reads a result set; [] = confirms it ran; [...] = OUT params.
- * Checkout/Pengembalian here call the *_sederhana objects (a teammate's
- * version); the real app still calls the original ones, untouched.
- */
+/** outs: null = reads a result set; [] = confirms it ran; [...] = OUT params. */
 const PROCEDURE_REGISTRY = {
-  sp_checkout_pesanan_sederhana: {
+  sp_checkout_pesanan: {
     label: 'Checkout Pesanan',
     params: [
       { name: 'idPs', label: 'ID Pemesanan baru (format PS####, belum dipakai)', placeholder: 'PS9001' },
@@ -18,7 +14,7 @@ const PROCEDURE_REGISTRY = {
     ],
     outs: [],
   },
-  sp_pengembalian_buku_sederhana: {
+  sp_pengembalian_buku: {
     label: 'Pengembalian Buku',
     params: [
       { name: 'idDpm', label: 'ID Detail Peminjaman', placeholder: 'DP0001' },

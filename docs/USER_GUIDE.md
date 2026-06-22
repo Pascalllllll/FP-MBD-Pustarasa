@@ -68,7 +68,7 @@ Kelola data petugas perpustakaan. Usia di bawah 18 tahun ditolak basis data.
 Tab **Kasir**:
 1. Klik kartu menu di kiri untuk menambah ke keranjang; atur kuantitas di kanan.
 2. Pilih **pengunjung**, **penjual** (terisi otomatis bila akun Anda tertaut), dan **metode pembayaran**.
-3. Tekan **Proses Pesanan**. Seluruh pesanan diproses sebagai satu transaksi; bila ada item habis/kuantitas tak sah, pesanan dibatalkan utuh.
+3. Tekan **Proses Pesanan**. Header transaksi dibuat lewat `sp_checkout_pesanan` (versi rekan satu tim), lalu backend menyisipkan tiap item dalam transaksi yang sama; bila ada item habis/kuantitas tak sah, pesanan dibatalkan utuh.
 4. Struk muncul dengan rincian dan total.
 
 Tab **Riwayat**: telusuri pesanan lampau; klik ID untuk melihat rincian (harga satuan yang dipakai adalah harga **saat transaksi**, bukan harga terkini).
@@ -81,7 +81,7 @@ Kelola data penjual kantin.
 ## Khusus Administrator
 
 ### Uji Procedure
-Panggil langsung tiga procedure dengan parameter sendiri: **Checkout Pesanan** dan **Pengembalian Buku** (versi sederhana dari rekan satu tim — `sp_checkout_pesanan_sederhana`/`sp_pengembalian_buku_sederhana`, objek terpisah dari yang dipakai Kasir & Pesanan/Pengembalian) dan **Rekap Harian** (`sp_rekap_harian`, persis yang dipakai Dasbor/Laporan). **Operasi ini berjalan sungguhan** — hasilnya benar-benar tersimpan, tidak di-rollback.
+Panggil langsung ketiga procedure dengan parameter sendiri — **Checkout Pesanan**, **Pengembalian Buku**, **Rekap Harian** — objek yang sama persis dengan yang dipakai Kasir & Pesanan/Pengembalian/Dasbor. **Operasi ini berjalan sungguhan** — hasilnya benar-benar tersimpan, tidak di-rollback.
 
 ### Uji Trigger
 Picu langsung salah satu dari 13 trigger dengan `INSERT`/`UPDATE` sungguhan ke tabel terkait, lalu sistem selalu **membatalkan (ROLLBACK)** operasinya — apa pun hasilnya, tidak ada data yang berubah permanen. Berguna untuk memverifikasi aturan trigger (termasuk yang versi `INSERT`-nya tidak bisa dipicu lewat alur normal di web) tanpa membuka `mysql` CLI.

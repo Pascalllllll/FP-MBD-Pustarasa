@@ -1,6 +1,7 @@
 'use strict';
 
 const { query, pool } = require('../config/db');
+const { generators } = require('../utils/idGenerator');
 
 /** Header rows with seller / visitor / payment + computed total. */
 async function findAll(search) {
@@ -52,19 +53,29 @@ async function findById(id) {
   return { ...header[0], items: lines };
 }
 
-/** Places an order via sp_checkout_pesanan, which snapshots prices and lets triggers validate stock/qty per line. */
+/** Header via sp_checkout_pesanan (no items), then one Detail_Pemesanan insert per item — same transaction, so stock/qty triggers can still roll back the whole order. */
 async function checkout(data) {
   const conn = await pool.getConnection();
   try {
-    await conn.query(`SET @id_ps = ''`);
-    await conn.query(`SET @total = 0`);
-    // JSON param: passing a JSON string works on both MySQL 8 and MariaDB.
-    await conn.query(
-      `CALL sp_checkout_pesanan(?, ?, ?, ?, @id_ps, @total)`,
-      [data.nik, data.nikPj, data.idMp, JSON.stringify(data.items)]
-    );
-    const [rows] = await conn.query(`SELECT @id_ps AS id_ps, @total AS total`);
-    return rows[0];
+    await conn.beginTransaction();
+
+    const idPs = await generators.pemesanan(conn);
+    await conn.execute(`CALL sp_checkout_pesanan(?, ?, ?, ?)`, [idPs, data.nik, data.nikPj, data.idMp]);
+
+    for (const item of data.items) {
+      const idDps = await generators.detailPemesanan(conn);
+      await conn.execute(
+        `INSERT INTO Detail_Pemesanan (ID_dps, Kuantitas_dps, Harga_Satuan_dps, Pemesanan_ID_ps, Makanan_ID_mk)
+         VALUES (?, ?, ?, ?, ?)`,
+        [idDps, item.qty, item.harga, idPs, item.id_mk]
+      );
+    }
+
+    await conn.commit();
+    return { id_ps: idPs };
+  } catch (err) {
+    await conn.rollback();
+    throw err;
   } finally {
     conn.release();
   }

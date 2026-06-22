@@ -5,6 +5,7 @@ const repo = require('../repositories/order.repository');
 const visitorRepo = require('../repositories/visitor.repository');
 const sellerRepo = require('../repositories/seller.repository');
 const paymentRepo = require('../repositories/payment.repository');
+const foodRepo = require('../repositories/food.repository');
 
 const list = (search) => repo.findAll(search);
 
@@ -14,7 +15,7 @@ async function get(id) {
   return row;
 }
 
-/** Validates refs then delegates to sp_checkout_pesanan; trigger errors roll back the whole order. */
+/** Validates refs, snapshots each item's current price server-side, then delegates to repo.checkout. */
 async function checkout(payload) {
   const [visitor, seller, method] = await Promise.all([
     visitorRepo.findById(payload.nik),
@@ -28,14 +29,14 @@ async function checkout(payload) {
     throw ApiError.badRequest('Keranjang pesanan kosong');
   }
 
-  const items = payload.items.map((it) => ({ id_mk: it.id_mk, qty: it.qty }));
-  const result = await repo.checkout({
-    nik: payload.nik,
-    nikPj: payload.nikPj,
-    idMp: payload.idMp,
-    items,
-  });
+  const items = [];
+  for (const it of payload.items) {
+    const food = await foodRepo.findById(it.id_mk);
+    if (!food) throw ApiError.badRequest(`Makanan ${it.id_mk} tidak ditemukan`);
+    items.push({ id_mk: it.id_mk, qty: it.qty, harga: food.Harga_mk });
+  }
 
+  const result = await repo.checkout({ nik: payload.nik, nikPj: payload.nikPj, idMp: payload.idMp, items });
   return get(result.id_ps);
 }
 

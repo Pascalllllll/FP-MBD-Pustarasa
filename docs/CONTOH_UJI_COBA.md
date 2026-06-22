@@ -33,7 +33,7 @@ Semua function aman dipanggil berkali-kali — murni baca data, tidak mengubah a
 
 | # | Procedure | Parameter Input | Ekspektasi Output | Catatan |
 |---|---|---|---|---|
-| 1 | Checkout Pesanan | `idPs`=`PS9001`, `nik`=`1234567890123456`, `penjual`=`4567890123456789`, `metode`=`MP0001` | `{ "executed": true }` | Membuat baris baru di `Pemesanan`. Pakai ID `PS####` yang belum ada (cek dulu di Laporan/Kasir bila ragu). |
+| 1 | Checkout Pesanan | `idPs`=`PS9001`, `nik`=`1234567890123456`, `penjual`=`4567890123456789`, `metode`=`MP0001` | `{ "executed": true }` | Procedure ini sendiri cuma bikin header `Pemesanan` (tanpa item) — beda dari tombol "Proses Pesanan" di Kasir, yang memanggil procedure ini lalu menambah item lewat backend. Pakai ID `PS####` yang belum ada (cek dulu di Laporan/Kasir bila ragu). |
 | 2 | Pengembalian Buku | `idDpm`=`ZZZZZZ` (tidak ada) | Ditolak: `Data peminjaman tidak ditemukan!` | Aman, tidak mengubah apa pun. |
 | | | `idDpm`=`DP0165` (sudah dikembalikan) | Ditolak: `Buku sudah dikembalikan!` | Aman, tidak mengubah apa pun. |
 | | | `idDpm`=`DP0010` (belum dikembalikan) | `{ "denda": 30000 }` (perkiraan 🕒) | **Mengubah data permanen** — `DP0010` akan benar-benar tercatat kembali. Pakai ID lain bila ingin coba ulang, atau jalankan `npm run db:reset` setelahnya. |

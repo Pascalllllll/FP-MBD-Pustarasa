@@ -65,7 +65,7 @@ Semua dideklarasikan `NOT DETERMINISTIC READS SQL DATA` karena membaca tabel.
 
 | Prosedur | Tanda tangan | Perilaku |
 |---|---|---|
-| `sp_checkout_pesanan` | `(IN nik, IN nik_pj, IN id_mp, IN items JSON, OUT id_ps, OUT total)` | **Transaksional.** Membuat header `Pemesanan`, lalu untuk tiap item JSON `{id_mk, qty}` mengunci **snapshot** `Harga_mk` ke `Harga_Satuan_dps` dan menyisipkan `Detail_Pemesanan`. Trigger stok & kuantitas tervalidasi per baris; kegagalan apa pun me-`ROLLBACK` seluruh pesanan. Mengembalikan ID & total. |
+| `sp_checkout_pesanan` | `(IN id_ps, IN nik, IN penjual, IN metode)` | Versi rekan satu tim — menyisipkan satu baris header `Pemesanan` (`id_ps` digenerate backend sebelum dipanggil); **tidak** menangani item. Backend memanggilnya lalu menyisipkan tiap baris `Detail_Pemesanan` sendiri dalam transaksi yang sama, dengan snapshot `Harga_mk` saat itu — trigger stok & kuantitas tetap tervalidasi per baris, dan kegagalan apa pun me-`ROLLBACK` seluruh pesanan termasuk header-nya (lihat §7 poin 8). |
 | `sp_pengembalian_buku` | `(IN id_dpm, IN tanggal, OUT denda)` | Mencap `Waktu_Kembali_dpm`; trigger AFTER-UPDATE lalu melepas status buku. Mengembalikan denda dari `sf_hitung_denda_peminjaman`. Menolak bila baris tak ada / sudah dikembalikan. |
 | `sp_rekap_harian` | `(IN tanggal)` | Satu baris ringkasan: jumlah kunjungan, peminjaman, pemesanan, dan total penjualan pada tanggal tsb. |
 
@@ -115,7 +115,7 @@ Tabel ini menjawab persyaratan inti: **setiap** objek basis data benar-benar dip
 
 | Objek DB | Tipe | Dipakai di (halaman / aksi) |
 |---|---|---|
-| `sp_checkout_pesanan` | Procedure | **Kasir & Pesanan** → tombol "Proses Pesanan" |
+| `sp_checkout_pesanan` | Procedure | **Kasir & Pesanan** → tombol "Proses Pesanan" (header transaksi) |
 | `sp_pengembalian_buku` | Procedure | **Pengembalian** → "Konfirmasi Pengembalian" |
 | `sp_rekap_harian` | Procedure | **Dasbor** (kartu Rekap Harian) & **Laporan** (pemilih tanggal) |
 | `sf_cek_ketersediaan_buku` | Function | **Katalog Buku** → modal detail buku |
@@ -173,3 +173,4 @@ Demi sistem yang dapat dijalankan, beberapa keputusan diambil dan dinyatakan ter
 5. **Isi prosedur ditulis lengkap.** Sumber hanya mendeskripsikan perilaku prosedur; implementasinya (termasuk penanganan JSON, snapshot harga, dan `ROLLBACK`) ditulis sesuai deskripsi tersebut.
 6. **Backend tidak pernah melewati logika DB.** Pemesanan, pengembalian, denda, rekomendasi, total, dan rekap semuanya memanggil function/procedure/view — bukan menghitung ulang di lapisan aplikasi. Trigger menangani pembaruan status otomatis.
 7. **Relasi `Penjual`–`Makanan` (1‑ke‑banyak).** `Makanan.Penjual_NIK_pj` (FK → `Penjual.NIK_pj`, `ON UPDATE CASCADE ON DELETE RESTRICT`) menandai menu tersebut **dimiliki** oleh satu penjual; satu penjual bisa punya banyak menu. Ini terpisah dari `Pemesanan.Penjual_NIK_pj`, yang menandai penjual mana yang **memproses** transaksi kasir — seorang kasir boleh menjual menu milik penjual lain. Karena `Nama_mk` tidak diberi constraint UNIQUE, dua penjual berbeda boleh punya menu dengan nama yang sama; masing-masing tetap baris (`ID_mk`) tersendiri di tabel `Makanan`.
+8. **`sp_checkout_pesanan` & `sp_pengembalian_buku` memakai versi rekan satu tim.** Versi awal `sp_checkout_pesanan` menerima keranjang `items JSON`, menyisipkan baris `Detail_Pemesanan` per item, dan mengembalikan total lewat `OUT` — semuanya di dalam satu procedure. Atas permintaan proyek, procedure-nya diganti ke versi rekan satu tim yang lebih sederhana: `sp_checkout_pesanan` kini hanya menyisipkan satu baris header `Pemesanan` (4 parameter `IN`, tanpa item/JSON/OUT). Supaya Kasir & Pesanan tetap punya menu-per-penjual dan keranjang, penanganan item **dipindah ke lapisan backend**: `order.repository.js` memanggil procedure untuk header, lalu menyisipkan tiap baris `Detail_Pemesanan` sendiri (dengan snapshot `Harga_mk` dari `order.service.js`) — masih dalam transaksi yang sama, sehingga trigger stok/kuantitas tetap tervalidasi dan kegagalan apa pun tetap me-`ROLLBACK` seluruh pesanan termasuk header-nya. `sp_pengembalian_buku` memakai pengecekan `ROW_COUNT()` setelah `SELECT...INTO` — perilaku akhirnya sama dengan versi sebelumnya, jadi tidak ada penyesuaian di lapisan aplikasi.
